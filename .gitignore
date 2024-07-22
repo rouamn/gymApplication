@@ -1,0 +1,29 @@
+﻿# Ignore Visual Studio temporary files, build results, and
+# build logs.
+*.log
+**/[Bb]in/
+**/[Oo]bj/
+.vs/
+
+# User-specific files
+*.rsuser
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Mono auto generated files
+mono_crash.*
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# VS Code directory
+.vscode/
