@@ -54,5 +54,7 @@ namespace GymApplication.Repository.Models
         public virtual ICollection<Paiement> Paiements { get; set; }
         [InverseProperty("IdUtilisateurNavigation")]
         public virtual ICollection<Profil> Profils { get; set; }
+
+        public string? Token { get; set; }
     }
 }

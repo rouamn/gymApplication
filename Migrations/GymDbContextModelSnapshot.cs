@@ -341,6 +341,9 @@ namespace GymApplication.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("telephone");
 
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
