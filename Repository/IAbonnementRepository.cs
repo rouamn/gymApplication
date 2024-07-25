@@ -11,5 +11,6 @@ namespace GymApplication.Repository
         Task<Abonnement> UpdateAbonementAsync(int abonnementId, Abonnement request);
         Task<Abonnement> DeleteAbonementAsync(int abonnementId);
         Task<Abonnement> AddAbonementAsync(Abonnement request);
+        Task<bool> Exist(int abonnementId);
     }
 }

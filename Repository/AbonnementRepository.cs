@@ -34,6 +34,11 @@ namespace GymApplication.Repository
             return null;
         }
 
+        public async Task<bool> Exist(int abonnementId)
+        {
+            return await context.Abonnements.AnyAsync(s => s.IdAbonnement == abonnementId);
+        }
+
         public async Task<ICollection> GetAbonementAsync()
         {
             var abonnements = await context.Abonnements.ToListAsync();
@@ -72,5 +77,7 @@ namespace GymApplication.Repository
 
             return null;
         }
+
+     
     }
 }
