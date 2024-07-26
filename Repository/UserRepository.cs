@@ -70,6 +70,18 @@ namespace GymApplication.Repository
                .FirstOrDefaultAsync(u => u.IdUtilisateur == userId);
         }
 
+        public async Task<IList<Utilisateur>> GetUsers()
+        {
+              var users = await context.Utilisateurs.ToListAsync();
+
+           
+            await context.SaveChangesAsync();
+
+            return users;
+        
+        
+        }
+
         public async Task<List<Utilisateur>> GetUsersAsync()
         {
             return await context.Utilisateurs.ToListAsync();

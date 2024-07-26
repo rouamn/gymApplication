@@ -81,5 +81,25 @@ namespace GymApplication.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("/AllUsers")]
+        public async Task<IActionResult> GetAllUsersWithFine()
+        {
+            var users = await uow.UserRepository.GetUsers();
+
+            var result = users.Select(user => new
+            {
+                user.IdUtilisateur,
+                user.Nom,
+                user.Prenom,
+                user.Email,
+               
+
+            });
+
+            return Ok(users);
+        }
+
     }
 }

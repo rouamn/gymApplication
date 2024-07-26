@@ -17,5 +17,6 @@ namespace GymApplication.Repository
         Task<bool> CheckUserNameExistAsync(string username);
         Task<bool> CheckEmailExistAsync(string email);
         string CheckPasswordStrengthAsync(string password);
+        Task<IList<Utilisateur>> GetUsers();
     }
 }
