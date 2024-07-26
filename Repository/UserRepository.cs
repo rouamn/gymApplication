@@ -2,6 +2,8 @@
 using GymApplication.Repository.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace GymApplication.Repository
 {
@@ -24,6 +26,26 @@ namespace GymApplication.Repository
         {
             return await context.Utilisateurs.FirstOrDefaultAsync(x => x.Email == email );
         }
+
+        public Task<bool> CheckEmailExistAsync(string email)
+           => context.Utilisateurs.AnyAsync(x => x.Email == email);
+
+        public string CheckPasswordStrengthAsync(string password)
+        {
+            StringBuilder sb = new StringBuilder();
+            if (password.Length < 8)
+                sb.Append("Password must be at least 8 characters long &&" + Environment.NewLine);
+            if (!(Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") &&
+                Regex.IsMatch(password, "[0-9]")))
+                sb.Append(" Password must contain at least one uppercase letter, one lowercase letter and one number &&" + Environment.NewLine);
+            if (!Regex.IsMatch(password, "[!@#$%^&*()_+=\\[\\]{};':\"\\\\|,.<>\\/?]"))
+                sb.Append(" Password must contain at least one special character" + Environment.NewLine);
+            return sb.ToString();
+        }
+
+        public Task<bool> CheckUserNameExistAsync(string username)
+             => context.Utilisateurs.AnyAsync(x => x.Nom == username);
+        
 
         public async Task<Utilisateur> DeleteUserAsync(int userId)
         {

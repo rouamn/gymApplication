@@ -13,5 +13,9 @@ namespace GymApplication.Repository
         Task<Utilisateur> DeleteUserAsync(int userId);
         Task<Utilisateur> AddUserAsync(Utilisateur request);
         Task<bool> ExistUser(int userId);
+
+        Task<bool> CheckUserNameExistAsync(string username);
+        Task<bool> CheckEmailExistAsync(string email);
+        string CheckPasswordStrengthAsync(string password);
     }
 }

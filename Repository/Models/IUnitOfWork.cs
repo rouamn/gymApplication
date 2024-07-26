@@ -4,6 +4,7 @@
     {
         IAbonnementRepository AbonnementRepository { get; }
         ICourRepository CourRepository { get; }
+        IUserRepository UserRepository { get; }
         int Complete();
     }
 }
