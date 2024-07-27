@@ -4,6 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Security.Claims;
+using GymApplication.Repository.Models.Dto;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace GymApplication.Repository
 {
@@ -45,7 +49,37 @@ namespace GymApplication.Repository
 
         public Task<bool> CheckUserNameExistAsync(string username)
              => context.Utilisateurs.AnyAsync(x => x.Nom == username);
-        
+
+        public string CreateJwtToken(Utilisateur user)
+        {
+            //List<string> claimsNames = new List<string>();
+            //claimsNames = context.Claims.Where(x => x.RoleId == user.RoleId).
+            //Select(x => x.claimName).
+            //ToList();
+
+            //string jsonList = JsonConvert.SerializeObject(claimsNames);
+
+            //var role = context.Roles.FirstOrDefault(x => x.Id == user.RoleId);
+            //var jwtTokenHandler = new JwtSecurityTokenHandler();
+            //var key = Encoding.ASCII.GetBytes("veryverysecret.....");
+
+            //var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
+
+            //var tokenDescriptor = new SecurityTokenDescriptor
+            //{
+            //    Subject = identity,
+            //    Expires = DateTime.Now.AddSeconds(10),
+            //    SigningCredentials = credentials
+            //};
+            //var token = jwtTokenHandler.CreateToken(tokenDescriptor);
+            //return jwtTokenHandler.WriteToken(token);
+            throw new NotImplementedException();
+        }
+
+        public string CreateRefreshToken()
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<Utilisateur> DeleteUserAsync(int userId)
         {
@@ -64,10 +98,41 @@ namespace GymApplication.Repository
             return await context.Utilisateurs.AnyAsync(u => u.IdUtilisateur == userId);
         }
 
+        public ClaimsPrincipal GetPrincipaleFromExpireToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("veryverysecret.....")),
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = false
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var jwtSecuriteToken = securityToken as JwtSecurityToken;
+            if (jwtSecuriteToken == null || !jwtSecuriteToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+            return principal;
+        }
+
         public async Task<Utilisateur> GetUserAsync(int userId)
         {
             return await context.Utilisateurs
                .FirstOrDefaultAsync(u => u.IdUtilisateur == userId);
+        }
+
+        public Task<Utilisateur> GetUserByEmail(string email)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<Utilisateur> GetUserByEmailToken(string emailToken)
+        {
+            return await context.Utilisateurs.AsNoTracking().FirstOrDefaultAsync(u => u.Email == emailToken);
         }
 
         public async Task<IList<Utilisateur>> GetUsers()
@@ -87,6 +152,11 @@ namespace GymApplication.Repository
             return await context.Utilisateurs.ToListAsync();
         }
 
+        public Task<Utilisateur> RefreshToken(TokenApiDto tokenApiDto)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Utilisateur> RegisterUser(Utilisateur request)
         {
          
@@ -104,6 +174,18 @@ namespace GymApplication.Repository
                 await context.SaveChangesAsync();
                 return user.Entity;
             
+        }
+
+        public async Task SendEmail(Utilisateur user)
+        {
+            context.Entry(user).State = EntityState.Modified;
+            await context.SaveChangesAsync();
+        }
+
+        public async Task SendResetEmail(Utilisateur user)
+        {
+            context.Entry(user).State = EntityState.Modified;
+            await context.SaveChangesAsync();
         }
 
         public async Task<Utilisateur> UpdateUserAsync(int userId, Utilisateur request)

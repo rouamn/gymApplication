@@ -1,4 +1,6 @@
 ﻿using GymApplication.Repository.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections;
 
 namespace GymApplication.Repository
@@ -11,34 +13,69 @@ namespace GymApplication.Repository
         {
             this.context = context;
         }
-        public Task<Evenement> AddEventAsync(Evenement request)
+        public async Task<Evenement> AddEventAsync(Evenement request)
         {
-            throw new NotImplementedException();
+            var evenements = await context.Evenements.AddAsync(request);
+            await context.SaveChangesAsync();
+            return evenements.Entity;
         }
 
-        public Task<Evenement> DeleteEventAsync(int eventId)
+        public async Task<Evenement> DeleteEventAsync(int eventId)
         {
-            throw new NotImplementedException();
+            var evenement = await GetEventAsync(eventId);
+
+            if (evenement != null)
+            {
+                context.Evenements.Remove(evenement);
+                await context.SaveChangesAsync();
+
+                return evenement;
+            }
+
+            return null;
         }
 
-        public Task<bool> Exist(int eventId)
+        public async Task<bool> Exist(int eventId)
         {
-            throw new NotImplementedException();
+            return await context.Evenements.AnyAsync(s => s.IdEvenement == eventId);
         }
 
-        public Task<ICollection> GetEventAsync()
+        public async Task<ICollection> GetEventAsync()
         {
-            throw new NotImplementedException();
+            var evenements = await context.Evenements.ToListAsync();
+            var evenementsToSend = evenements.Select(b => new
+            {
+                b.Nom,
+                b.Description,
+                b.Date,
+            }).ToList();
+            return evenementsToSend;
         }
 
-        public Task<Evenement> GetEventAsync(int eventId)
+        public async Task<Evenement> GetEventAsync(int eventId)
         {
-            throw new NotImplementedException();
+            return await context.Evenements
+                  .FirstOrDefaultAsync(u => u.IdEvenement == eventId);
         }
 
-        public Task<Evenement> UpdateEventAsync(int eventId, Abonnement request)
+        public async Task<Evenement> UpdateEventAsync(int eventId, Evenement request)
         {
-            throw new NotImplementedException();
+            var existingEvent = await GetEventAsync(eventId);
+
+            if (existingEvent != null)
+            {
+                existingEvent.Nom = request.Nom;
+                existingEvent.Description = request.Description;
+                existingEvent.Date = request.Date;
+                existingEvent.UpdatedAt = DateTime.UtcNow;
+
+                await context.SaveChangesAsync();
+
+                return existingEvent;
+
+            }
+
+            return null;
         }
     }
 }
