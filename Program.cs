@@ -62,6 +62,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("angularApplication");
     app.UseSwagger();
     app.UseSwaggerUI();
 }

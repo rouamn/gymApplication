@@ -8,6 +8,7 @@ using System.Security.Claims;
 using GymApplication.Repository.Models.Dto;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Cryptography;
 
 namespace GymApplication.Repository
 {
@@ -16,19 +17,28 @@ namespace GymApplication.Repository
 
         private readonly GymDbContext context;
         private readonly PasswordHacher PasswordHacher;
-        public UserRepository(GymDbContext context , PasswordHacher PasswordHacher)
+        private readonly string jwtSecret;
+
+        public UserRepository(GymDbContext context, PasswordHacher PasswordHacher, string jwtSecret)
         {
             this.context = context;
             this.PasswordHacher = PasswordHacher;
+            this.jwtSecret = jwtSecret;
         }
-        public Task<Utilisateur> AddUserAsync(Utilisateur request)
+
+        public async Task<Utilisateur> AddUserAsync(Utilisateur request)
         {
-            throw new NotImplementedException();
+            request.MotDePasse = PasswordHacher.HashPassword(request.MotDePasse);
+            request.CreatedAt = DateTime.Now;
+
+            var user = await context.Utilisateurs.AddAsync(request);
+            await context.SaveChangesAsync();
+            return user.Entity;
         }
 
         public async Task<Utilisateur> Authenticate(string email)
         {
-            return await context.Utilisateurs.FirstOrDefaultAsync(x => x.Email == email );
+            return await context.Utilisateurs.FirstOrDefaultAsync(x => x.Email == email);
         }
 
         public Task<bool> CheckEmailExistAsync(string email)
@@ -39,11 +49,10 @@ namespace GymApplication.Repository
             StringBuilder sb = new StringBuilder();
             if (password.Length < 8)
                 sb.Append("Password must be at least 8 characters long &&" + Environment.NewLine);
-            if (!(Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") &&
-                Regex.IsMatch(password, "[0-9]")))
-                sb.Append(" Password must contain at least one uppercase letter, one lowercase letter and one number &&" + Environment.NewLine);
+            if (!(Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]") && Regex.IsMatch(password, "[0-9]")))
+                sb.Append("Password must contain at least one uppercase letter, one lowercase letter, and one number &&" + Environment.NewLine);
             if (!Regex.IsMatch(password, "[!@#$%^&*()_+=\\[\\]{};':\"\\\\|,.<>\\/?]"))
-                sb.Append(" Password must contain at least one special character" + Environment.NewLine);
+                sb.Append("Password must contain at least one special character" + Environment.NewLine);
             return sb.ToString();
         }
 
@@ -52,33 +61,67 @@ namespace GymApplication.Repository
 
         public string CreateJwtToken(Utilisateur user)
         {
-            //List<string> claimsNames = new List<string>();
-            //claimsNames = context.Claims.Where(x => x.RoleId == user.RoleId).
-            //Select(x => x.claimName).
-            //ToList();
-
-            //string jsonList = JsonConvert.SerializeObject(claimsNames);
-
-            //var role = context.Roles.FirstOrDefault(x => x.Id == user.RoleId);
-            //var jwtTokenHandler = new JwtSecurityTokenHandler();
-            //var key = Encoding.ASCII.GetBytes("veryverysecret.....");
-
-            //var credentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256);
-
-            //var tokenDescriptor = new SecurityTokenDescriptor
+            //var claims = new[]
             //{
-            //    Subject = identity,
-            //    Expires = DateTime.Now.AddSeconds(10),
-            //    SigningCredentials = credentials
+            //    new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+            //    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            //    new Claim(ClaimTypes.NameIdentifier, user.IdUtilisateur.ToString())
             //};
-            //var token = jwtTokenHandler.CreateToken(tokenDescriptor);
-            //return jwtTokenHandler.WriteToken(token);
-            throw new NotImplementedException();
+
+            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
+            //var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            //var token = new JwtSecurityToken(
+            //    issuer: "yourdomain.com",
+            //    audience: "yourdomain.com",
+            //    claims: claims,
+            //    expires: DateTime.Now.AddMinutes(30),
+            //    signingCredentials: creds);
+
+            //return new JwtSecurityTokenHandler().WriteToken(token);
+           
+                if (user == null)
+                {
+                    throw new ArgumentNullException(nameof(user));
+                }
+
+                var key = "veryverysecret.....";
+                if (string.IsNullOrEmpty(key))
+                {
+                    throw new ArgumentNullException(nameof(key), "Key for token generation cannot be null or empty.");
+                }
+
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+                var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+                var claims = new[]
+                {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Email ?? throw new ArgumentNullException(nameof(user.Email))),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        // Ajoutez d'autres revendications si nécessaire
+    };
+
+                var token = new JwtSecurityToken(
+                    issuer: "yourIssuer",
+                    audience: "yourAudience",
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(120),
+                    signingCredentials: credentials
+                );
+
+                return new JwtSecurityTokenHandler().WriteToken(token);
+            
+
         }
 
         public string CreateRefreshToken()
         {
-            throw new NotImplementedException();
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
         }
 
         public async Task<Utilisateur> DeleteUserAsync(int userId)
@@ -104,10 +147,11 @@ namespace GymApplication.Repository
             {
                 ValidateAudience = false,
                 ValidateIssuer = false,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("veryverysecret.....")),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSecret)),
                 ValidateIssuerSigningKey = true,
                 ValidateLifetime = false
             };
+
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
@@ -121,13 +165,12 @@ namespace GymApplication.Repository
 
         public async Task<Utilisateur> GetUserAsync(int userId)
         {
-            return await context.Utilisateurs
-               .FirstOrDefaultAsync(u => u.IdUtilisateur == userId);
+            return await context.Utilisateurs.FirstOrDefaultAsync(u => u.IdUtilisateur == userId);
         }
 
-        public Task<Utilisateur> GetUserByEmail(string email)
+        public async Task<Utilisateur> GetUserByEmail(string email)
         {
-            throw new NotImplementedException();
+            return await context.Utilisateurs.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task<Utilisateur> GetUserByEmailToken(string emailToken)
@@ -137,14 +180,7 @@ namespace GymApplication.Repository
 
         public async Task<IList<Utilisateur>> GetUsers()
         {
-              var users = await context.Utilisateurs.ToListAsync();
-
-           
-            await context.SaveChangesAsync();
-
-            return users;
-        
-        
+            return await context.Utilisateurs.ToListAsync();
         }
 
         public async Task<List<Utilisateur>> GetUsersAsync()
@@ -152,28 +188,43 @@ namespace GymApplication.Repository
             return await context.Utilisateurs.ToListAsync();
         }
 
-        public Task<Utilisateur> RefreshToken(TokenApiDto tokenApiDto)
-        {
-            throw new NotImplementedException();
+        public async Task<Utilisateur> RefreshToken(TokenApiDto tokenApiDto) { 
+            return null;
+            //{
+            //    var principal = GetPrincipaleFromExpireToken(tokenApiDto.AccessToken);
+            //    var email = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            //    var user = await GetUserByEmail(email);
+
+            //    if (user == null || user.RefreshToken != tokenApiDto.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            //    {
+            //        throw new SecurityTokenException("Invalid refresh token");
+            //    }
+
+            //    var newAccessToken = CreateJwtToken(user);
+            //    var newRefreshToken = CreateRefreshToken();
+
+            //    user.RefreshToken = newRefreshToken;
+            //    await context.SaveChangesAsync();
+
+            //    return new Utilisateur
+            //    {
+            //        IdUtilisateur = user.IdUtilisateur,
+            //        Email = user.Email,
+            //        Token = newAccessToken,
+            //        RefreshToken = newRefreshToken
+            //    };
         }
 
         public async Task<Utilisateur> RegisterUser(Utilisateur request)
         {
-         
-                request.MotDePasse = PasswordHacher.HashPassword(request.MotDePasse);
-                request.Token = "";  
-                request.CreatedAt = DateTime.Now; 
-                request.Nom = request.Nom; 
-                request.Prenom = request.Prenom; 
-                request.DateNaissance = request.DateNaissance; 
-                request.Adresse = request.Adresse; 
-                request.Telephone = request.Telephone;
+            request.MotDePasse = PasswordHacher.HashPassword(request.MotDePasse);
+            request.Token = "";
+            request.CreatedAt = DateTime.Now;
 
-            // Add and save the user
             var user = await context.Utilisateurs.AddAsync(request);
-                await context.SaveChangesAsync();
-                return user.Entity;
-            
+            await context.SaveChangesAsync();
+            return user.Entity;
         }
 
         public async Task SendEmail(Utilisateur user)
@@ -202,7 +253,6 @@ namespace GymApplication.Repository
                 existingUser.Telephone = request.Telephone;
                 existingUser.Token = existingUser.Token;
                 existingUser.UpdatedAt = DateTime.UtcNow;
-
 
                 await context.SaveChangesAsync();
                 return existingUser;

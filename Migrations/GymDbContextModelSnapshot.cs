@@ -330,6 +330,12 @@ namespace GymApplication.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("prenom");
 
+                    b.Property<DateTime>("ResetPasswordExpiry")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResetPasswordToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasMaxLength(50)

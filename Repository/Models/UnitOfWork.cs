@@ -8,19 +8,21 @@ namespace GymApplication.Repository.Models
 
         public ICourRepository CourRepository =>  new CourRepository(_context);
 
-        public IUserRepository UserRepository => new UserRepository(_context, PasswordHacher);
+        public IUserRepository UserRepository => new UserRepository(_context, PasswordHacher, jwtSecret);
 
         private readonly GymDbContext _context;
         private readonly PasswordHacher PasswordHacher;
+        private readonly string jwtSecret;
         public UnitOfWork(GymDbContext context)
         {
             _context = context;
 
         }
-        public UnitOfWork(GymDbContext context, PasswordHacher PasswordHacher)
+        public UnitOfWork(GymDbContext context, PasswordHacher PasswordHacher, string jwtSecret)
         {
             _context = context;
             PasswordHacher=PasswordHacher;
+            this.jwtSecret = jwtSecret;
 
         }
         public int Complete()

@@ -35,5 +35,20 @@ namespace GymApplication.Controllers
 
         }
 
+        [HttpGet]
+        [Route("/Cours/{id:int}")]
+        public async Task<IActionResult> GetAbonnement(int courId)
+        {
+            var cour = await uow.CourRepository.GetCourAsync(courId);
+
+            if (cour == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(cour);
+
+        }
+
     }
 }
