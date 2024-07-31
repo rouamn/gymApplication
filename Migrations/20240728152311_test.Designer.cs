@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240728110450_test")]
+    [Migration("20240728152311_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -38,7 +38,7 @@ namespace GymApplication.Repository
         {
             var cours = await context.Cours.ToListAsync();
             var coursToSend = cours.Select(b => new
-            {
+            {   b.IdCours,
                 b.Nom,
                 b.Description,
                 b.Duree,

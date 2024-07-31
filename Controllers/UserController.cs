@@ -57,7 +57,7 @@ namespace GymApplication.Controllers
 
 
         [HttpGet]
-        [Route("/AllUsers")]
+        [Route("AllUsers")]
         public async Task<IActionResult> GetAllUsersWithFine()
         {
             var users = await uow.UserRepository.GetUsers();
@@ -74,10 +74,45 @@ namespace GymApplication.Controllers
 
             return Ok(users);
         }
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await uow.UserRepository.DeleteUserAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { Message = "User not found." });
+            }
+
+            return Ok(new { Message = "User deleted successfully." });
+        }
 
 
-        [HttpPost]
-        [Route("/authenticate")]
+        [HttpPost("add")]
+        public async Task<IActionResult> AddUser([FromBody] Utilisateur request)
+        {
+            if (request == null)
+            {
+                return BadRequest(new { Message = "Invalid user data." });
+            }
+
+            var emailExists = await uow.UserRepository.CheckEmailExistAsync(request.Email);
+            if (emailExists)
+            {
+                return Conflict(new { Message = "Email already exists." });
+            }
+
+            var user = await uow.UserRepository.AddUserAsync(request);
+            if (user == null)
+            {
+                return StatusCode(500, new { Message = "An error occurred while adding the user." });
+            }
+
+            return Ok(new { Message = "User added successfully.", User = user });
+        }
+    
+
+    [HttpPost]
+        [Route("authenticate")]
         [HttpPost]
         public async Task<IActionResult> Authenticate([FromBody] AuthenticateRequest request)
         {
@@ -147,4 +182,6 @@ namespace GymApplication.Controllers
 
         }
     }
+
+
 }
