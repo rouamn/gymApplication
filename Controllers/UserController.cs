@@ -74,6 +74,7 @@ namespace GymApplication.Controllers
 
             return Ok(users);
         }
+
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

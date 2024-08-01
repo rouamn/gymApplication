@@ -49,6 +49,31 @@ namespace GymApplication.Controllers
             return Ok(cour);
 
         }
+        [HttpPut]
+        [Route("UpdateCourse/{id:int}")]
+        public async Task<IActionResult> UpdateCourse(int id, [FromBody] Cour request)
+        {
+            var updatedCourse = await uow.CourRepository.UpdateCourAsync(id, request);
+            if (updatedCourse == null)
+            {
+                return NotFound(new { Message = "Course not found." });
+            }
+            return Ok(new { Message = "Course updated successfully.", Course = updatedCourse });
+        }
 
+        [HttpDelete]
+        [Route("DeleteCourse/{id:int}")]
+        public async Task<IActionResult> DeleteCourse(int id)
+        {
+            var deletedCourse = await uow.CourRepository.DeleteCourAsync(id);
+            if (deletedCourse == null)
+            {
+                return NotFound(new { Message = "Course not found." });
+            }
+            return Ok(new { Message = "Course deleted successfully." });
+        }
     }
+
 }
+
+

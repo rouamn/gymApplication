@@ -52,6 +52,8 @@ namespace GymApplication.Repository
                 .FirstOrDefaultAsync(u => u.IdCours == courId);
         }
 
+
+
         public async Task<Cour> UpdateCourAsync(int courId, Cour request)
         {
             var existingCour = await GetCourAsync(courId);
