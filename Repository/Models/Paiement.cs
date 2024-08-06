@@ -29,5 +29,8 @@ namespace GymApplication.Repository.Models
         [ForeignKey("IdUtilisateur")]
         [InverseProperty("Paiements")]
         public virtual Utilisateur IdUtilisateurNavigation { get; set; } = null!;
+        [Column("fk_abonnement")]
+        public int FkAbonnement { get; set; } // Foreign key
+        public virtual Abonnement Abonnement { get; set; } = null!; // Navigation property
     }
 }

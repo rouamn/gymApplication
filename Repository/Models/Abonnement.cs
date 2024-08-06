@@ -12,8 +12,7 @@ namespace GymApplication.Repository.Models
         [Key]
         [Column("id_abonnement")]
         public int IdAbonnement { get; set; }
-        [Column("id_utilisateur")]
-        public int IdUtilisateur { get; set; }
+     
         [Column("date_debut", TypeName = "date")]
         public DateTime DateDebut { get; set; }
         [Column("date_fin", TypeName = "date")]
@@ -31,8 +30,8 @@ namespace GymApplication.Repository.Models
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-        [ForeignKey("IdUtilisateur")]
-        [InverseProperty("Abonnements")]
-        public virtual Utilisateur IdUtilisateurNavigation { get; set; } = null!;
+   public Paiement? Paiements { get; set; }
+        public int PaiementFk { get; set; }
+
     }
 }

@@ -4,6 +4,7 @@ using GymApplication.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    partial class GymDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240806165215_test3")]
+    partial class test3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,6 +74,9 @@ namespace GymApplication.Migrations
 
                     b.HasKey("IdAbonnement")
                         .HasName("PK__Abonneme__395058AB06AC8C7D");
+
+                    b.HasIndex("PaiementFk")
+                        .IsUnique();
 
                     b.ToTable("Abonnement");
                 });
@@ -172,6 +177,9 @@ namespace GymApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaiement"), 1L, 1);
 
+                    b.Property<int>("AbonnemntFk")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -181,10 +189,6 @@ namespace GymApplication.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime")
                         .HasColumnName("date");
-
-                    b.Property<int>("FkAbonnement")
-                        .HasColumnType("int")
-                        .HasColumnName("fk_abonnement");
 
                     b.Property<int>("IdUtilisateur")
                         .HasColumnType("int")
@@ -208,9 +212,6 @@ namespace GymApplication.Migrations
 
                     b.HasKey("IdPaiement")
                         .HasName("PK__Paiement__72D44CFF086B29B8");
-
-                    b.HasIndex("FkAbonnement")
-                        .IsUnique();
 
                     b.HasIndex("IdUtilisateur");
 
@@ -341,21 +342,24 @@ namespace GymApplication.Migrations
                     b.ToTable("Utilisateur");
                 });
 
+            modelBuilder.Entity("GymApplication.Repository.Models.Abonnement", b =>
+                {
+                    b.HasOne("GymApplication.Repository.Models.Paiement", "Paiement")
+                        .WithOne("Abonnement")
+                        .HasForeignKey("GymApplication.Repository.Models.Abonnement", "PaiementFk")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Paiement");
+                });
+
             modelBuilder.Entity("GymApplication.Repository.Models.Paiement", b =>
                 {
-                    b.HasOne("GymApplication.Repository.Models.Abonnement", "Abonnement")
-                        .WithOne("Paiements")
-                        .HasForeignKey("GymApplication.Repository.Models.Paiement", "FkAbonnement")
-                        .IsRequired()
-                        .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
-
                     b.HasOne("GymApplication.Repository.Models.Utilisateur", "IdUtilisateurNavigation")
                         .WithMany("Paiements")
                         .HasForeignKey("IdUtilisateur")
                         .IsRequired()
                         .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
-
-                    b.Navigation("Abonnement");
 
                     b.Navigation("IdUtilisateurNavigation");
                 });
@@ -371,9 +375,9 @@ namespace GymApplication.Migrations
                     b.Navigation("IdUtilisateurNavigation");
                 });
 
-            modelBuilder.Entity("GymApplication.Repository.Models.Abonnement", b =>
+            modelBuilder.Entity("GymApplication.Repository.Models.Paiement", b =>
                 {
-                    b.Navigation("Paiements");
+                    b.Navigation("Abonnement");
                 });
 
             modelBuilder.Entity("GymApplication.Repository.Models.Utilisateur", b =>

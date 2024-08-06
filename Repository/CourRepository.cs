@@ -48,6 +48,8 @@ namespace GymApplication.Repository
                 b.Nom,
                 b.Description,
                 b.Duree,
+                b.InstructorName,
+                b.CourseDate,
             }).ToList();
             return coursToSend;
         }
@@ -69,7 +71,8 @@ namespace GymApplication.Repository
                 existingCour.Nom = request.Nom;
                 existingCour.Description = request.Description;
                 existingCour.Duree = request.Duree;
-
+                existingCour.CourseDate = request.CourseDate;
+                existingCour.InstructorName = request.InstructorName;
 
                 await context.SaveChangesAsync();
 

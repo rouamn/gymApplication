@@ -12,7 +12,7 @@ namespace GymApplication.Repository.Models
     {
         public Utilisateur()
         {
-            Abonnements = new HashSet<Abonnement>();
+        
             Paiements = new HashSet<Paiement>();
             Profils = new HashSet<Profil>();
         }
@@ -48,8 +48,6 @@ namespace GymApplication.Repository.Models
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-        [InverseProperty("IdUtilisateurNavigation")]
-        public virtual ICollection<Abonnement> Abonnements { get; set; }
         [InverseProperty("IdUtilisateurNavigation")]
         public virtual ICollection<Paiement> Paiements { get; set; }
         [InverseProperty("IdUtilisateurNavigation")]

@@ -9,10 +9,7 @@ namespace GymApplication.Repository.Models
     [Table("Evenement")]
     public partial class Evenement
     {
-        public Evenement()
-        {
-            Plannings = new HashSet<Planning>();
-        }
+       
 
         [Key]
         [Column("id_evenement")]
@@ -25,11 +22,17 @@ namespace GymApplication.Repository.Models
         [Column("date", TypeName = "datetime")]
         public DateTime Date { get; set; }
         [Column("created_at", TypeName = "datetime")]
+
+
+
         public DateTime? CreatedAt { get; set; }
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
+        [Column("heure_debut")]
+        public TimeSpan HeureDebut { get; set; }
+        [Column("heure_fin")]
+        public TimeSpan HeureFin { get; set; }
 
-        [InverseProperty("IdEvenementNavigation")]
-        public virtual ICollection<Planning> Plannings { get; set; }
+
     }
 }

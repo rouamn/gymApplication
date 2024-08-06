@@ -21,7 +21,7 @@ namespace GymApplication.Repository
         public virtual DbSet<Cour> Cours { get; set; } = null!;
         public virtual DbSet<Evenement> Evenements { get; set; } = null!;
         public virtual DbSet<Paiement> Paiements { get; set; } = null!;
-        public virtual DbSet<Planning> Plannings { get; set; } = null!;
+   
         public virtual DbSet<Profil> Profils { get; set; } = null!;
         public virtual DbSet<Utilisateur> Utilisateurs { get; set; } = null!;
 
@@ -36,21 +36,18 @@ namespace GymApplication.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Abonnement>(entity =>
-            {
-                entity.HasKey(e => e.IdAbonnement)
-                    .HasName("PK__Abonneme__395058AB06AC8C7D");
+                    modelBuilder.Entity<Abonnement>(entity =>
+                    {
+                        entity.HasKey(e => e.IdAbonnement)
+                            .HasName("PK__Abonneme__395058AB06AC8C7D");
 
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+                        entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
+                        entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
-                entity.HasOne(d => d.IdUtilisateurNavigation)
-                    .WithMany(p => p.Abonnements)
-                    .HasForeignKey(d => d.IdUtilisateur)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Abonnemen__id_ut__3E52440B");
-            });
+              
+                    });
+
 
             modelBuilder.Entity<Cour>(entity =>
             {
@@ -84,20 +81,28 @@ namespace GymApplication.Repository
                     .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
             });
 
-            modelBuilder.Entity<Planning>(entity =>
+
+            modelBuilder.Entity<Paiement>(entity =>
             {
-                entity.HasKey(e => e.IdPlanning)
-                    .HasName("PK__Planning__0119D9CC46D31DDD");
+                entity.HasKey(e => e.IdPaiement)
+                    .HasName("PK__Paiement__72D44CFF086B29B8");
 
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
 
                 entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
-                entity.HasOne(d => d.IdEvenementNavigation)
-                    .WithMany(p => p.Plannings)
-                    .HasForeignKey(d => d.IdEvenement)
+                entity.HasOne(d => d.IdUtilisateurNavigation)
+                    .WithMany(p => p.Paiements)
+                    .HasForeignKey(d => d.IdUtilisateur)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Planning__id_eve__52593CB8");
+                    .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
+
+                entity.HasOne(d => d.Abonnement)
+                    .WithOne(p => p.Paiements)  // Optional: If Abonnement can have multiple Paiements
+
+                    .HasForeignKey<Paiement>(d => d.FkAbonnement)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
             });
 
             modelBuilder.Entity<Profil>(entity =>
