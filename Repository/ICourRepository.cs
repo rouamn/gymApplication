@@ -10,5 +10,6 @@ namespace GymApplication.Repository
         Task<Cour> UpdateCourAsync(int courId, Cour request);
         Task<Cour> DeleteCourAsync(int courId);
         Task<Cour> AddCourAsync(Cour request);
+        Task<bool> Exist(int courId);
     }
 }

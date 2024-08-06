@@ -11,7 +11,7 @@ namespace GymApplication.Repository
         {
             this.context = context;
         }
-        
+
         public async Task<Cour> AddCourAsync(Cour request)
         {
             var cour = await context.Cours.AddAsync(request);
@@ -34,11 +34,17 @@ namespace GymApplication.Repository
             return null;
         }
 
+        public async Task<bool> Exist(int courId)
+        {
+            return await context.Cours.AnyAsync(s => s.IdCours == courId);
+        }
+
         public async Task<ICollection> GetCourAsync()
         {
             var cours = await context.Cours.ToListAsync();
             var coursToSend = cours.Select(b => new
-            {   b.IdCours,
+            {
+                b.IdCours,
                 b.Nom,
                 b.Description,
                 b.Duree,
@@ -63,7 +69,7 @@ namespace GymApplication.Repository
                 existingCour.Nom = request.Nom;
                 existingCour.Description = request.Description;
                 existingCour.Duree = request.Duree;
-             
+
 
                 await context.SaveChangesAsync();
 

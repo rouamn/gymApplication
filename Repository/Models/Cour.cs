@@ -18,5 +18,12 @@ namespace GymApplication.Repository.Models
         public string? Description { get; set; }
         [Column("duree")]
         public TimeSpan Duree { get; set; }
+
+        [Column("instructor_name")]
+        [StringLength(255)]
+        public string? InstructorName { get; set; }
+
+        [Column("course_date")]
+        public DateTime CourseDate { get; set; }
     }
 }

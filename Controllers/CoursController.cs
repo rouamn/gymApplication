@@ -35,43 +35,66 @@ namespace GymApplication.Controllers
 
         }
 
-        [HttpGet]
-        [Route("/Cours/{id:int}")]
-        public async Task<IActionResult> GetAbonnement(int courId)
-        {
-            var cour = await uow.CourRepository.GetCourAsync(courId);
 
-            if (cour == null)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetCourseById(int id)
+        {
+            var course = await uow.CourRepository.GetCourAsync(id);
+
+            if (course == null)
             {
                 return NotFound();
             }
 
-            return Ok(cour);
-
+            return Ok(course);
         }
+
+
+
         [HttpPut]
-        [Route("UpdateCourse/{id:int}")]
-        public async Task<IActionResult> UpdateCourse(int id, [FromBody] Cour request)
+        [Route("{id:int}")]
+        public async Task<IActionResult> UpdateCourseAsync([FromRoute] int id, [FromBody] Cour requet)
         {
-            var updatedCourse = await uow.CourRepository.UpdateCourAsync(id, request);
-            if (updatedCourse == null)
+            //Check course exist
+            if (await uow.CourRepository.Exist(id))
             {
-                return NotFound(new { Message = "Course not found." });
+                //Update course
+                var updatedcour = await uow.CourRepository.UpdateCourAsync(id, requet);
+                if (updatedcour != null)
+                {
+                    //Return course
+                    return Ok(updatedcour);
+                }
             }
-            return Ok(new { Message = "Course updated successfully.", Course = updatedCourse });
+            return NotFound();
+
         }
 
-        [HttpDelete]
-        [Route("DeleteCourse/{id:int}")]
-        public async Task<IActionResult> DeleteCourse(int id)
+
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteCourAsync([FromRoute] int id)
         {
-            var deletedCourse = await uow.CourRepository.DeleteCourAsync(id);
-            if (deletedCourse == null)
+            // Check if the course exists
+            if (await uow.CourRepository.Exist(id))
             {
-                return NotFound(new { Message = "Course not found." });
+                // Delete the course
+                var deletedCourse = await uow.CourRepository.DeleteCourAsync(id);
+
+                if (deletedCourse != null)
+                {
+                    // Return success
+                    return Ok("success");
+                }
+                else
+                {
+                    // Return failure if deletion was unsuccessful
+                    return StatusCode(500, "An error occurred while deleting the course.");
+                }
             }
-            return Ok(new { Message = "Course deleted successfully." });
+            // Course not found
+            return NotFound("Course not found");
         }
+
     }
 
 }
