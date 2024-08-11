@@ -35,11 +35,10 @@ namespace GymApplication.Controllers
 
         }
 
-        [HttpGet]
-        [Route("/Abonnements/{AbonnementId:int}")]
-        public async Task<IActionResult> GetAbonnement(int abonnementId)
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetCourseById(int id)
         {
-            var abonnement = await uow.AbonnementRepository.GetAbonementAsync(abonnementId);
+            var abonnement = await uow.AbonnementRepository.GetAbonementAsync(id);
 
             if (abonnement == null)
             {
@@ -47,48 +46,50 @@ namespace GymApplication.Controllers
             }
 
             return Ok(abonnement);
-
         }
 
+
         [HttpPut]
-        [Route("/Abonnements/{AbonnementId:int}")]
-        public async Task<IActionResult> UpdateAbonnementAsync([FromRoute] int abonnementId, [FromBody] Abonnement requet)
+        [Route("{id:int}")]
+        public async Task<IActionResult> UpdateAbonnementAsync([FromRoute] int id, [FromBody] Abonnement requet)
         {
             //Check abonnement exist
-            if (await uow.AbonnementRepository.Exist(abonnementId))
+            if (await uow.AbonnementRepository.Exist(id))
             {
                 //Update abonnement
-                var updatedAbonnement = await uow.AbonnementRepository.UpdateAbonementAsync(abonnementId, requet);
-                if (updatedAbonnement != null)
+                var updatedabonnement = await uow.AbonnementRepository.UpdateAbonementAsync(id, requet);
+                if (updatedabonnement != null)
                 {
                     //Return abonnement
-                    return Ok(updatedAbonnement);
+                    return Ok(updatedabonnement);
                 }
             }
             return NotFound();
 
         }
 
-        [HttpDelete]
-        [Route("/DeleteAbonnement/{AbonnementId:int}")]
-        public async Task<IActionResult> deleteAbonnementAsync([FromRoute] int abonnementId)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAbonnementAsync([FromRoute] int id)
         {
-            //Check livre exist
-            if (await uow.AbonnementRepository.Exist(abonnementId))
+            // Check if the Abonnement exists
+            if (await uow.AbonnementRepository.Exist(id))
             {
-                //Delete livre
-                var deletedLivre = await uow.AbonnementRepository.DeleteAbonementAsync(abonnementId);
+                // Delete the Abonnement
+                var deletedAbonnement = await uow.AbonnementRepository.DeleteAbonementAsync(id);
 
-                if (deletedLivre != null)
+                if (deletedAbonnement != null)
                 {
-                    //Return livre
+                    // Return Abonnement
                     return Ok("success");
                 }
-
+                else
+                {
+                    // Return failure if deletion was unsuccessful
+                    return StatusCode(500, "An error occurred while deleting the abonnement.");
+                }
             }
-            //Livre not found
-            return Ok("fail");
-
+            // Abonnement not found
+            return NotFound("abonnement not found");
         }
 
     }

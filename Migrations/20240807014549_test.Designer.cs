@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240806165704_test5")]
-    partial class test5
+    [Migration("20240807014549_test")]
+    partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -174,9 +174,6 @@ namespace GymApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaiement"), 1L, 1);
 
-                    b.Property<int>("AbonnemntFk")
-                        .HasColumnType("int");
-
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
@@ -186,6 +183,10 @@ namespace GymApplication.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime")
                         .HasColumnName("date");
+
+                    b.Property<int>("FkAbonnement")
+                        .HasColumnType("int")
+                        .HasColumnName("fk_abonnement");
 
                     b.Property<int>("IdUtilisateur")
                         .HasColumnType("int")
@@ -210,7 +211,7 @@ namespace GymApplication.Migrations
                     b.HasKey("IdPaiement")
                         .HasName("PK__Paiement__72D44CFF086B29B8");
 
-                    b.HasIndex("AbonnemntFk")
+                    b.HasIndex("FkAbonnement")
                         .IsUnique();
 
                     b.HasIndex("IdUtilisateur");
@@ -345,10 +346,10 @@ namespace GymApplication.Migrations
             modelBuilder.Entity("GymApplication.Repository.Models.Paiement", b =>
                 {
                     b.HasOne("GymApplication.Repository.Models.Abonnement", "Abonnement")
-                        .WithOne("Paiement")
-                        .HasForeignKey("GymApplication.Repository.Models.Paiement", "AbonnemntFk")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithOne("Paiements")
+                        .HasForeignKey("GymApplication.Repository.Models.Paiement", "FkAbonnement")
+                        .IsRequired()
+                        .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
 
                     b.HasOne("GymApplication.Repository.Models.Utilisateur", "IdUtilisateurNavigation")
                         .WithMany("Paiements")
@@ -374,7 +375,7 @@ namespace GymApplication.Migrations
 
             modelBuilder.Entity("GymApplication.Repository.Models.Abonnement", b =>
                 {
-                    b.Navigation("Paiement");
+                    b.Navigation("Paiements");
                 });
 
             modelBuilder.Entity("GymApplication.Repository.Models.Utilisateur", b =>

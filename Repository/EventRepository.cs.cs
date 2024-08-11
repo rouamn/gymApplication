@@ -45,9 +45,12 @@ namespace GymApplication.Repository
             var evenements = await context.Evenements.ToListAsync();
             var evenementsToSend = evenements.Select(b => new
             {
+                b.IdEvenement,
                 b.Nom,
                 b.Description,
                 b.Date,
+                b.HeureDebut,
+                b.HeureFin,
             }).ToList();
             return evenementsToSend;
         }

@@ -10,6 +10,26 @@ namespace GymApplication.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Abonnement",
+                columns: table => new
+                {
+                    id_abonnement = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    date_debut = table.Column<DateTime>(type: "date", nullable: false),
+                    date_fin = table.Column<DateTime>(type: "date", nullable: false),
+                    prix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    type_abonnement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    PaiementFk = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Abonneme__395058AB06AC8C7D", x => x.id_abonnement);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Cours",
                 columns: table => new
                 {
@@ -17,7 +37,9 @@ namespace GymApplication.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     nom = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    duree = table.Column<TimeSpan>(type: "time", nullable: false)
+                    duree = table.Column<TimeSpan>(type: "time", nullable: false),
+                    instructor_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    course_date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -34,7 +56,9 @@ namespace GymApplication.Migrations
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     date = table.Column<DateTime>(type: "datetime", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    heure_debut = table.Column<TimeSpan>(type: "time", nullable: false),
+                    heure_fin = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,54 +91,6 @@ namespace GymApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Planning",
-                columns: table => new
-                {
-                    id_planning = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_evenement = table.Column<int>(type: "int", nullable: false),
-                    jour = table.Column<DateTime>(type: "date", nullable: false),
-                    heure_debut = table.Column<TimeSpan>(type: "time", nullable: false),
-                    heure_fin = table.Column<TimeSpan>(type: "time", nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Planning__0119D9CC46D31DDD", x => x.id_planning);
-                    table.ForeignKey(
-                        name: "FK__Planning__id_eve__52593CB8",
-                        column: x => x.id_evenement,
-                        principalTable: "Evenement",
-                        principalColumn: "id_evenement");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Abonnement",
-                columns: table => new
-                {
-                    id_abonnement = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_utilisateur = table.Column<int>(type: "int", nullable: false),
-                    date_debut = table.Column<DateTime>(type: "date", nullable: false),
-                    date_fin = table.Column<DateTime>(type: "date", nullable: false),
-                    prix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    type_abonnement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Abonneme__395058AB06AC8C7D", x => x.id_abonnement);
-                    table.ForeignKey(
-                        name: "FK__Abonnemen__id_ut__3E52440B",
-                        column: x => x.id_utilisateur,
-                        principalTable: "Utilisateur",
-                        principalColumn: "id_utilisateur");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Paiement",
                 columns: table => new
                 {
@@ -125,11 +101,17 @@ namespace GymApplication.Migrations
                     date = table.Column<DateTime>(type: "datetime", nullable: false),
                     methode_paiement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    fk_abonnement = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK__Paiement__72D44CFF086B29B8", x => x.id_paiement);
+                    table.ForeignKey(
+                        name: "FK__Paiement__id_abo__4E88ABD4",
+                        column: x => x.fk_abonnement,
+                        principalTable: "Abonnement",
+                        principalColumn: "id_abonnement");
                     table.ForeignKey(
                         name: "FK__Paiement__id_uti__46E78A0C",
                         column: x => x.id_utilisateur,
@@ -160,19 +142,15 @@ namespace GymApplication.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Abonnement_id_utilisateur",
-                table: "Abonnement",
-                column: "id_utilisateur");
+                name: "IX_Paiement_fk_abonnement",
+                table: "Paiement",
+                column: "fk_abonnement",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Paiement_id_utilisateur",
                 table: "Paiement",
                 column: "id_utilisateur");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Planning_id_evenement",
-                table: "Planning",
-                column: "id_evenement");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profil_id_utilisateur",
@@ -189,22 +167,19 @@ namespace GymApplication.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Abonnement");
+                name: "Cours");
 
             migrationBuilder.DropTable(
-                name: "Cours");
+                name: "Evenement");
 
             migrationBuilder.DropTable(
                 name: "Paiement");
 
             migrationBuilder.DropTable(
-                name: "Planning");
-
-            migrationBuilder.DropTable(
                 name: "Profil");
 
             migrationBuilder.DropTable(
-                name: "Evenement");
+                name: "Abonnement");
 
             migrationBuilder.DropTable(
                 name: "Utilisateur");

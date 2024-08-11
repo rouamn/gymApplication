@@ -44,6 +44,9 @@ namespace GymApplication.Repository
             var abonnements = await context.Abonnements.ToListAsync();
             var abonnementsToSend = abonnements.Select(b => new
             {
+                b.IdAbonnement,
+                b.TypeAbonnement,
+                b.Statut,
                 b.DateDebut,
                 b.DateFin,
                 b.Prix,
@@ -64,6 +67,9 @@ namespace GymApplication.Repository
 
             if (existingAbonnement != null)
             {
+                existingAbonnement.TypeAbonnement = request.TypeAbonnement;
+                existingAbonnement.Prix = request.Prix;
+
                 existingAbonnement.DateDebut = request.DateDebut;
                 existingAbonnement.DateFin = request.DateFin;
                 existingAbonnement.Statut = request.Statut;
