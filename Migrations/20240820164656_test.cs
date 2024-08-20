@@ -119,28 +119,6 @@ namespace GymApplication.Migrations
                         principalColumn: "id_utilisateur");
                 });
 
-            migrationBuilder.CreateTable(
-                name: "Profil",
-                columns: table => new
-                {
-                    id_photo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    id_utilisateur = table.Column<int>(type: "int", nullable: false),
-                    photo = table.Column<byte[]>(type: "varbinary(max)", nullable: true),
-                    biographie = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Profil__599E10ACBD030CCE", x => x.id_photo);
-                    table.ForeignKey(
-                        name: "FK__Profil__id_utili__4D94879B",
-                        column: x => x.id_utilisateur,
-                        principalTable: "Utilisateur",
-                        principalColumn: "id_utilisateur");
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Paiement_fk_abonnement",
                 table: "Paiement",
@@ -150,11 +128,6 @@ namespace GymApplication.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Paiement_id_utilisateur",
                 table: "Paiement",
-                column: "id_utilisateur");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Profil_id_utilisateur",
-                table: "Profil",
                 column: "id_utilisateur");
 
             migrationBuilder.CreateIndex(
@@ -174,9 +147,6 @@ namespace GymApplication.Migrations
 
             migrationBuilder.DropTable(
                 name: "Paiement");
-
-            migrationBuilder.DropTable(
-                name: "Profil");
 
             migrationBuilder.DropTable(
                 name: "Abonnement");

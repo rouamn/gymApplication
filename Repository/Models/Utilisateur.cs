@@ -14,7 +14,7 @@ namespace GymApplication.Repository.Models
         {
         
             Paiements = new HashSet<Paiement>();
-            Profils = new HashSet<Profil>();
+           
         }
 
         [Key]
@@ -50,8 +50,7 @@ namespace GymApplication.Repository.Models
 
         [InverseProperty("IdUtilisateurNavigation")]
         public virtual ICollection<Paiement> Paiements { get; set; }
-        [InverseProperty("IdUtilisateurNavigation")]
-        public virtual ICollection<Profil> Profils { get; set; }
+
 
         public string? Token { get; set; }
 

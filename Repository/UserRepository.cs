@@ -102,8 +102,8 @@ namespace GymApplication.Repository
     };
 
                 var token = new JwtSecurityToken(
-                    issuer: "yourIssuer",
-                    audience: "yourAudience",
+                    issuer: user.Nom,
+                    audience: user.Prenom,
                     claims: claims,
                     expires: DateTime.Now.AddMinutes(120),
                     signingCredentials: credentials

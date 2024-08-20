@@ -22,7 +22,7 @@ namespace GymApplication.Repository
         public virtual DbSet<Evenement> Evenements { get; set; } = null!;
         public virtual DbSet<Paiement> Paiements { get; set; } = null!;
    
-        public virtual DbSet<Profil> Profils { get; set; } = null!;
+      
         public virtual DbSet<Utilisateur> Utilisateurs { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -105,21 +105,7 @@ namespace GymApplication.Repository
                     .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
             });
 
-            modelBuilder.Entity<Profil>(entity =>
-            {
-                entity.HasKey(e => e.IdPhoto)
-                    .HasName("PK__Profil__599E10ACBD030CCE");
-
-                entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
-
-                entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
-
-                entity.HasOne(d => d.IdUtilisateurNavigation)
-                    .WithMany(p => p.Profils)
-                    .HasForeignKey(d => d.IdUtilisateur)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Profil__id_utili__4D94879B");
-            });
+          
 
             modelBuilder.Entity<Utilisateur>(entity =>
             {

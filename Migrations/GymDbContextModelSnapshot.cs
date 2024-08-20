@@ -217,47 +217,6 @@ namespace GymApplication.Migrations
                     b.ToTable("Paiement");
                 });
 
-            modelBuilder.Entity("GymApplication.Repository.Models.Profil", b =>
-                {
-                    b.Property<int>("IdPhoto")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id_photo");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPhoto"), 1L, 1);
-
-                    b.Property<string>("Biographie")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("biographie");
-
-                    b.Property<DateTime?>("CreatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasColumnName("created_at")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int>("IdUtilisateur")
-                        .HasColumnType("int")
-                        .HasColumnName("id_utilisateur");
-
-                    b.Property<byte[]>("Photo")
-                        .HasColumnType("varbinary(max)")
-                        .HasColumnName("photo");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasColumnName("updated_at")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.HasKey("IdPhoto")
-                        .HasName("PK__Profil__599E10ACBD030CCE");
-
-                    b.HasIndex("IdUtilisateur");
-
-                    b.ToTable("Profil");
-                });
-
             modelBuilder.Entity("GymApplication.Repository.Models.Utilisateur", b =>
                 {
                     b.Property<int>("IdUtilisateur")
@@ -360,17 +319,6 @@ namespace GymApplication.Migrations
                     b.Navigation("IdUtilisateurNavigation");
                 });
 
-            modelBuilder.Entity("GymApplication.Repository.Models.Profil", b =>
-                {
-                    b.HasOne("GymApplication.Repository.Models.Utilisateur", "IdUtilisateurNavigation")
-                        .WithMany("Profils")
-                        .HasForeignKey("IdUtilisateur")
-                        .IsRequired()
-                        .HasConstraintName("FK__Profil__id_utili__4D94879B");
-
-                    b.Navigation("IdUtilisateurNavigation");
-                });
-
             modelBuilder.Entity("GymApplication.Repository.Models.Abonnement", b =>
                 {
                     b.Navigation("Paiements");
@@ -379,8 +327,6 @@ namespace GymApplication.Migrations
             modelBuilder.Entity("GymApplication.Repository.Models.Utilisateur", b =>
                 {
                     b.Navigation("Paiements");
-
-                    b.Navigation("Profils");
                 });
 #pragma warning restore 612, 618
         }
