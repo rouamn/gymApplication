@@ -11,5 +11,6 @@ namespace GymApplication.Repository
         Task<Evenement> DeleteEventAsync(int eventId);
         Task<Evenement> AddEventAsync(Evenement request);
         Task<bool> Exist(int eventId);
+        Task<int> CountEventAsync();
     }
 }

@@ -1,4 +1,5 @@
-﻿using GymApplication.Repository.Models;
+﻿using GymApplication.Repository;
+using GymApplication.Repository.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GymApplication.Controllers
@@ -21,6 +22,28 @@ namespace GymApplication.Controllers
             var cours = await uow.CourRepository.GetCourAsync();
 
             return Ok(cours);
+        }
+
+        [HttpGet]
+        [Route("CountAllCourses")]
+        public async Task<IActionResult> CountAllCoursess()
+        {
+            var cours = await uow.CourRepository.CountCourAsync();
+
+            return Ok(cours);
+        }
+        [HttpGet]
+        [Route("coursecounts")]
+        public ActionResult<Dictionary<string, int>> GetCourseCountsByInstructor()
+        {
+            var courseCounts = uow.CourRepository.GetCourseCountByInstructor();
+
+            if (courseCounts == null || courseCounts.Count == 0)
+            {
+                return NotFound("No courses found or no instructors available.");
+            }
+
+            return Ok(courseCounts);
         }
 
         [HttpPost]

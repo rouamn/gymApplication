@@ -246,11 +246,12 @@ namespace GymApplication.Repository
             {
                 existingUser.Nom = request.Nom;
                 existingUser.Prenom = request.Prenom;
-                existingUser.DateNaissance = request.DateNaissance;
+               
                 existingUser.Email = request.Email;
                 existingUser.MotDePasse = existingUser.MotDePasse;
-                existingUser.Adresse = existingUser.Adresse;
-                existingUser.Telephone = request.Telephone;
+                //existingUser.Adresse = existingUser.Adresse;
+                //existingUser.Telephone = request.Telephone;
+                //existingUser.DateNaissance = request.DateNaissance;
                 existingUser.Token = existingUser.Token;
                 existingUser.UpdatedAt = DateTime.UtcNow;
 

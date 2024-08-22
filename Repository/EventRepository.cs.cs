@@ -20,6 +20,13 @@ namespace GymApplication.Repository
             return evenements.Entity;
         }
 
+        public async Task<int> CountEventAsync()
+        {
+            var events = await context.Evenements.ToListAsync();
+            var count = events.Count;
+            return count;
+        }
+
         public async Task<Evenement> DeleteEventAsync(int eventId)
         {
             var evenement = await GetEventAsync(eventId);

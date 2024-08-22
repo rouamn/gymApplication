@@ -11,5 +11,7 @@ namespace GymApplication.Repository
         Task<Cour> DeleteCourAsync(int courId);
         Task<Cour> AddCourAsync(Cour request);
         Task<bool> Exist(int courId);
+        Task<int> CountCourAsync();
+        Dictionary<string, int> GetCourseCountByInstructor();
     }
 }

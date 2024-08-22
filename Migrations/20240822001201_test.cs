@@ -30,6 +30,22 @@ namespace GymApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Contact",
+                columns: table => new
+                {
+                    id_contact = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Nom = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Contact", x => x.id_contact);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Cours",
                 columns: table => new
                 {
@@ -75,10 +91,6 @@ namespace GymApplication.Migrations
                     prenom = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
                     mot_de_passe = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
-                    date_naissance = table.Column<DateTime>(type: "date", nullable: false),
-                    adresse = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    telephone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
-                    role = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -139,6 +151,9 @@ namespace GymApplication.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Contact");
+
             migrationBuilder.DropTable(
                 name: "Cours");
 

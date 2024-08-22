@@ -6,6 +6,7 @@
         ICourRepository CourRepository { get; }
         IUserRepository UserRepository { get; }
         IEventRepository EventRepository { get; }
+        IContactRepository ContactRepository { get; }
         int Complete();
     }
 }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240820164656_test")]
+    [Migration("20240822001201_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -76,6 +76,36 @@ namespace GymApplication.Migrations
                         .HasName("PK__Abonneme__395058AB06AC8C7D");
 
                     b.ToTable("Abonnement");
+                });
+
+            modelBuilder.Entity("GymApplication.Repository.Models.Contact", b =>
+                {
+                    b.Property<int>("IdContact")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id_contact");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdContact"), 1L, 1);
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nom")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("IdContact");
+
+                    b.ToTable("Contact");
                 });
 
             modelBuilder.Entity("GymApplication.Repository.Models.Cour", b =>
@@ -228,20 +258,11 @@ namespace GymApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUtilisateur"), 1L, 1);
 
-                    b.Property<string>("Adresse")
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)")
-                        .HasColumnName("adresse");
-
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
-
-                    b.Property<DateTime>("DateNaissance")
-                        .HasColumnType("date")
-                        .HasColumnName("date_naissance");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -272,17 +293,6 @@ namespace GymApplication.Migrations
 
                     b.Property<string>("ResetPasswordToken")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("role");
-
-                    b.Property<string>("Telephone")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("telephone");
 
                     b.Property<string>("Token")
                         .HasColumnType("nvarchar(max)");

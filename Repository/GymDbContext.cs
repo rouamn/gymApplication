@@ -21,8 +21,8 @@ namespace GymApplication.Repository
         public virtual DbSet<Cour> Cours { get; set; } = null!;
         public virtual DbSet<Evenement> Evenements { get; set; } = null!;
         public virtual DbSet<Paiement> Paiements { get; set; } = null!;
-   
-      
+
+        public virtual DbSet<Contact> Contacts { get; set; } = null!;
         public virtual DbSet<Utilisateur> Utilisateurs { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -36,6 +36,8 @@ namespace GymApplication.Repository
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+
                     modelBuilder.Entity<Abonnement>(entity =>
                     {
                         entity.HasKey(e => e.IdAbonnement)

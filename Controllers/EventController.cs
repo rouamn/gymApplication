@@ -24,6 +24,16 @@ namespace GymApplication.Controllers
             return Ok(events);
         }
 
+
+        [HttpGet]
+        [Route("CountAllEvents")]
+        public async Task<IActionResult> CountAllEvents()
+        {
+            var events = await uow.EventRepository.CountEventAsync();
+
+            return Ok(events);
+        }
+
         [HttpPost]
         [Route("Insertevent")]
         public async Task<IActionResult> AddEventAsync([FromBody] Evenement request)

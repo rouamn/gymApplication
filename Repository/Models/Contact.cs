@@ -12,11 +12,10 @@ namespace GymApplication.Repository.Models
         [Key]
         [Column("id_contact")]
         public int IdContact { get; set; }
-
         public String Nom { get; set; }
-       
         public String Email { get; set; }
-
+        [Column("created_at", TypeName = "datetime")]
+        public DateTime? CreatedAt { get; set; }
         public String Description { get; set; }
     }
 }

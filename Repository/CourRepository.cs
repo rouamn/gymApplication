@@ -19,6 +19,13 @@ namespace GymApplication.Repository
             return cour.Entity;
         }
 
+        public async Task<int> CountCourAsync()
+        {
+            var cours = await context.Cours.ToListAsync();
+            var count = cours.Count;
+            return count;
+        }
+
         public async Task<Cour> DeleteCourAsync(int courId)
         {
             var cour = await GetCourAsync(courId);
@@ -60,7 +67,21 @@ namespace GymApplication.Repository
                 .FirstOrDefaultAsync(u => u.IdCours == courId);
         }
 
+        public Dictionary<string, int> GetCourseCountByInstructor()
+        {
+            {
+                var courseCounts = context.Cours
+                    .GroupBy(c => c.InstructorName)
+                    .Select(group => new
+                    {
+                        InstructorName = group.Key,
+                        CourseCount = group.Count()
+                    })
+                    .ToDictionary(x => x.InstructorName, x => x.CourseCount);
 
+                return courseCounts;
+            }
+        }
 
         public async Task<Cour> UpdateCourAsync(int courId, Cour request)
         {
