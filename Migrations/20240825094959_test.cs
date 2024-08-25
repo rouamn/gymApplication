@@ -15,8 +15,7 @@ namespace GymApplication.Migrations
                 {
                     id_abonnement = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    date_debut = table.Column<DateTime>(type: "date", nullable: false),
-                    date_fin = table.Column<DateTime>(type: "date", nullable: false),
+                    date = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     prix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     type_abonnement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
@@ -114,6 +113,7 @@ namespace GymApplication.Migrations
                     methode_paiement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    stripe_payment_intent_id = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     fk_abonnement = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>

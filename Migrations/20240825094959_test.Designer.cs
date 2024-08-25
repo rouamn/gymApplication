@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240822001201_test")]
+    [Migration("20240825094959_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,13 +39,10 @@ namespace GymApplication.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTime>("DateDebut")
-                        .HasColumnType("date")
-                        .HasColumnName("date_debut");
-
-                    b.Property<DateTime>("DateFin")
-                        .HasColumnType("date")
-                        .HasColumnName("date_fin");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("date");
 
                     b.Property<int>("PaiementFk")
                         .HasColumnType("int");
@@ -231,6 +228,10 @@ namespace GymApplication.Migrations
                     b.Property<decimal>("Montant")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("montant");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("stripe_payment_intent_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()

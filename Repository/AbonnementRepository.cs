@@ -47,8 +47,7 @@ namespace GymApplication.Repository
                 b.IdAbonnement,
                 b.TypeAbonnement,
                 b.Statut,
-                b.DateDebut,
-                b.DateFin,
+                b.Date,
                 b.Prix,
             }).ToList();
             return abonnementsToSend;
@@ -70,8 +69,7 @@ namespace GymApplication.Repository
                 existingAbonnement.TypeAbonnement = request.TypeAbonnement;
                 existingAbonnement.Prix = request.Prix;
 
-                existingAbonnement.DateDebut = request.DateDebut;
-                existingAbonnement.DateFin = request.DateFin;
+                existingAbonnement.Date = request.Date;
                 existingAbonnement.Statut = request.Statut;
                 existingAbonnement.UpdatedAt = DateTime.UtcNow;
 

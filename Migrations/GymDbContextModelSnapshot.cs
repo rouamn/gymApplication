@@ -37,13 +37,10 @@ namespace GymApplication.Migrations
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTime>("DateDebut")
-                        .HasColumnType("date")
-                        .HasColumnName("date_debut");
-
-                    b.Property<DateTime>("DateFin")
-                        .HasColumnType("date")
-                        .HasColumnName("date_fin");
+                    b.Property<string>("Date")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("date");
 
                     b.Property<int>("PaiementFk")
                         .HasColumnType("int");
@@ -229,6 +226,10 @@ namespace GymApplication.Migrations
                     b.Property<decimal>("Montant")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("montant");
+
+                    b.Property<string>("StripePaymentIntentId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("stripe_payment_intent_id");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()

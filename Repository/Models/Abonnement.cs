@@ -13,10 +13,9 @@ namespace GymApplication.Repository.Models
         [Column("id_abonnement")]
         public int IdAbonnement { get; set; }
      
-        [Column("date_debut", TypeName = "date")]
-        public DateTime DateDebut { get; set; }
-        [Column("date_fin", TypeName = "date")]
-        public DateTime DateFin { get; set; }
+        [Column("date")]
+        public String Date { get; set; }
+      
         [Column("prix", TypeName = "decimal(10, 2)")]
         public decimal Prix { get; set; }
         [Column("statut")]
