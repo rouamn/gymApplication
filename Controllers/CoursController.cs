@@ -46,18 +46,52 @@ namespace GymApplication.Controllers
             return Ok(courseCounts);
         }
 
+        //[HttpPost]
+        //[Route("Insertcourse")]
+        //public async Task<IActionResult> AddCouseAsync([FromBody] Cour request)
+        //{
+        //    //Add abonnement
+        //    await uow.CourRepository.AddCourAsync(request);
+
+        //    //Return abonnement
+        //    return Ok(new { Message = "course added successfully !!" });
+
+        //}
+
+
+
         [HttpPost]
         [Route("Insertcourse")]
-        public async Task<IActionResult> AddCouseAsync([FromBody] Cour request)
+        public async Task<IActionResult> AddCouseAsync([FromForm] Cour request, [FromForm] IFormFile image)
         {
-            //Add abonnement
+            if (image != null && image.Length > 0)
+            {
+                // Generate a unique file name
+                var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+                var extension = Path.GetExtension(image.FileName);
+                var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+                // Define the path where the image will be saved
+                var path = Path.Combine("wwwroot/images/courses", uniqueFileName);
+
+                // Save the image to the specified path
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                // Update the course request with just the image filename (without path)
+                request.ImagePath = uniqueFileName;
+            }
+
+            // Add the course to the database
             await uow.CourRepository.AddCourAsync(request);
 
-            //Return abonnement
-            return Ok(new { Message = "course added successfully !!" });
-
+            // Return a success message
+            return Ok(new { Message = "Course added successfully with image!" });
         }
 
+      
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetCourseById(int id)
@@ -118,8 +152,66 @@ namespace GymApplication.Controllers
             return NotFound("Course not found");
         }
 
-    }
 
+        [HttpGet]
+        [Route("GetImage/{id}")]
+        public async Task<IActionResult> GetCourseImageByIdAsync(int id)
+        {
+            // Step 1: Retrieve the course record from the database
+            var course = await uow.CourRepository.GetCourAsync(id);
+            if (course == null)
+            {
+                // Log and return if course is not found
+                Console.WriteLine($"Course with ID {id} not found.");
+                return NotFound();
+            }
+
+            // Step 2: Get the image filename from the retrieved course record
+            var imageFileName = course.ImagePath; // Assuming ImagePath is just the filename
+            if (string.IsNullOrEmpty(imageFileName))
+            {
+                // Log and return if image filename is not found
+                Console.WriteLine($"No image associated with course ID {id}.");
+                return NotFound();
+            }
+
+            // Step 3: Construct the full file path
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/courses", imageFileName);
+            Console.WriteLine($"Image Path: {imagePath}");
+
+            // Step 4: Check if the file exists in the specified path
+            if (!System.IO.File.Exists(imagePath))
+            {
+                // Log and return if file does not exist
+                Console.WriteLine($"File not found at path: {imagePath}");
+                return NotFound();
+            }
+
+            // Step 5: If the file exists, return the image
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+
+            // Determine the content type based on the file extension
+            string contentType = GetContentType(imageFileName);
+
+            // Return the image file with the correct content type
+            return File(fileBytes, contentType);
+        }
+
+        // Helper function to determine content type
+        private string GetContentType(string fileName)
+        {
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".bmp" => "image/bmp",
+                _ => "application/octet-stream", // default for unknown types
+            };
+        }
+
+    }
 }
 
 

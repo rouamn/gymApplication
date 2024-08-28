@@ -25,5 +25,6 @@ namespace GymApplication.Repository.Models
 
         [Column("course_date")]
         public DateTime CourseDate { get; set; }
+        public string? ImagePath { get; set; }
     }
 }

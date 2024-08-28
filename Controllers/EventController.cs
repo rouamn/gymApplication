@@ -34,17 +34,52 @@ namespace GymApplication.Controllers
             return Ok(events);
         }
 
+        //[HttpPost]
+        //[Route("Insertevent")]
+        //public async Task<IActionResult> AddEventAsync([FromBody] Evenement request)
+        //{
+        //    //Add abonnement
+        //    await uow.EventRepository.AddEventAsync(request);
+
+        //    //Return abonnement
+        //    return Ok(new { Message = "event added successfully !!" });
+
+        //}
+
         [HttpPost]
         [Route("Insertevent")]
-        public async Task<IActionResult> AddEventAsync([FromBody] Evenement request)
+        public async Task<IActionResult> AddEventAsync([FromForm] Evenement request, [FromForm] IFormFile image)
         {
-            //Add abonnement
+            if (image != null && image.Length > 0)
+            {
+                // Generate a unique file name
+                var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+                var extension = Path.GetExtension(image.FileName);
+                var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+                // Define the path where the image will be saved
+                var path = Path.Combine("wwwroot/images/events", uniqueFileName);
+
+                // Ensure the directory exists
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+                // Save the image to the specified path
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await image.CopyToAsync(stream);
+                }
+
+                // Update the event request with just the image filename (without path)
+                request.ImagePath = uniqueFileName;
+            }
+
+            // Add the event to the database
             await uow.EventRepository.AddEventAsync(request);
 
-            //Return abonnement
-            return Ok(new { Message = "event added successfully !!" });
-
+            // Return a success message
+            return Ok(new { Message = "Event added successfully with image!" });
         }
+
 
 
         [HttpGet("{id:int}")]
@@ -99,11 +134,73 @@ namespace GymApplication.Controllers
                 else
                 {
                     // Return failure if deletion was unsuccessful
-                    return StatusCode(500, "An error occurred while deleting the course.");
+                    return StatusCode(500, "An error occurred while deleting the event.");
                 }
             }
             // Course not found
-            return NotFound("Course not found");
+            return NotFound("event not found");
+        }
+
+
+
+
+
+        [HttpGet]
+        [Route("GetImage/{id}")]
+        public async Task<IActionResult> GetEventImageByIdAsync(int id)
+        {
+            // Step 1: Retrieve the course record from the database
+            var course = await uow.EventRepository.GetEventAsync(id);
+            if (course == null)
+            {
+                // Log and return if course is not found
+                Console.WriteLine($"Event with ID {id} not found.");
+                return NotFound();
+            }
+
+            // Step 2: Get the image filename from the retrieved course record
+            var imageFileName = course.ImagePath; // Assuming ImagePath is just the filename
+            if (string.IsNullOrEmpty(imageFileName))
+            {
+                // Log and return if image filename is not found
+                Console.WriteLine($"No image associated with event ID {id}.");
+                return NotFound();
+            }
+
+            // Step 3: Construct the full file path
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/events", imageFileName);
+            Console.WriteLine($"Image Path: {imagePath}");
+
+            // Step 4: Check if the file exists in the specified path
+            if (!System.IO.File.Exists(imagePath))
+            {
+                // Log and return if file does not exist
+                Console.WriteLine($"File not found at path: {imagePath}");
+                return NotFound();
+            }
+
+            // Step 5: If the file exists, return the image
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
+
+            // Determine the content type based on the file extension
+            string contentType = GetContentType(imageFileName);
+
+            // Return the image file with the correct content type
+            return File(fileBytes, contentType);
+        }
+
+        // Helper function to determine content type
+        private string GetContentType(string fileName)
+        {
+            var extension = Path.GetExtension(fileName).ToLowerInvariant();
+            return extension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                ".bmp" => "image/bmp",
+                _ => "application/octet-stream", // default for unknown types
+            };
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using GymApplication.Repository.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 
@@ -46,6 +47,7 @@ namespace GymApplication.Repository
             return await context.Cours.AnyAsync(s => s.IdCours == courId);
         }
 
+      
         public async Task<ICollection> GetCourAsync()
         {
             var cours = await context.Cours.ToListAsync();
@@ -57,10 +59,13 @@ namespace GymApplication.Repository
                 b.Duree,
                 b.InstructorName,
                 b.CourseDate,
+                b.ImagePath,
             }).ToList();
             return coursToSend;
         }
 
+
+      
         public async Task<Cour> GetCourAsync(int courId)
         {
             return await context.Cours
@@ -83,6 +88,8 @@ namespace GymApplication.Repository
             }
         }
 
+    
+
         public async Task<Cour> UpdateCourAsync(int courId, Cour request)
         {
             var existingCour = await GetCourAsync(courId);
@@ -102,6 +109,21 @@ namespace GymApplication.Repository
             }
 
             return null;
+        }
+
+        public async Task<bool> UpdateImage(int courId, string profileImageUrl)
+        {
+            var cour = await GetCourAsync(courId);
+
+            if (cour != null)
+            {
+                cour.ImagePath = profileImageUrl;
+                await context.SaveChangesAsync();
+
+                return true;
+            }
+
+            return false;
         }
     }
 }

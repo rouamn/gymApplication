@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240825094959_test")]
+    [Migration("20240828030951_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,9 @@ namespace GymApplication.Migrations
                         .HasColumnType("time")
                         .HasColumnName("duree");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InstructorName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
@@ -173,6 +176,9 @@ namespace GymApplication.Migrations
                     b.Property<TimeSpan>("HeureFin")
                         .HasColumnType("time")
                         .HasColumnName("heure_fin");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nom")
                         .IsRequired()

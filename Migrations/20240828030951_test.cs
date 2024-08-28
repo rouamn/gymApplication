@@ -54,7 +54,8 @@ namespace GymApplication.Migrations
                     description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     duree = table.Column<TimeSpan>(type: "time", nullable: false),
                     instructor_name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    course_date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    course_date = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -73,7 +74,8 @@ namespace GymApplication.Migrations
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     heure_debut = table.Column<TimeSpan>(type: "time", nullable: false),
-                    heure_fin = table.Column<TimeSpan>(type: "time", nullable: false)
+                    heure_fin = table.Column<TimeSpan>(type: "time", nullable: false),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

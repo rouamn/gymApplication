@@ -34,6 +34,7 @@ using GymApplication.Repository.Models;
 using GymApplication.Repository;
 using Microsoft.EntityFrameworkCore;
 using GymApplication.UtilityService;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,9 +69,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 
+app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllers();

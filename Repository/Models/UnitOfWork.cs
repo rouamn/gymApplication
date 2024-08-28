@@ -13,6 +13,7 @@ namespace GymApplication.Repository.Models
         public IEventRepository EventRepository => new EventRepository(_context);
 
         public IContactRepository ContactRepository =>  new ContactRepository(_context);
+        public IImageRepository LocalStorageImageRepository => new LocalStorageImageRepository(_context);
 
         private readonly GymDbContext _context;
         private readonly PasswordHacher PasswordHacher;

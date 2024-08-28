@@ -124,6 +124,9 @@ namespace GymApplication.Migrations
                         .HasColumnType("time")
                         .HasColumnName("duree");
 
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("InstructorName")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)")
@@ -171,6 +174,9 @@ namespace GymApplication.Migrations
                     b.Property<TimeSpan>("HeureFin")
                         .HasColumnType("time")
                         .HasColumnName("heure_fin");
+
+                    b.Property<string>("ImagePath")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nom")
                         .IsRequired()

@@ -7,6 +7,7 @@
         IUserRepository UserRepository { get; }
         IEventRepository EventRepository { get; }
         IContactRepository ContactRepository { get; }
+        IImageRepository LocalStorageImageRepository { get; }
         int Complete();
     }
 }

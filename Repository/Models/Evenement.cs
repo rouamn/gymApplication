@@ -33,6 +33,8 @@ namespace GymApplication.Repository.Models
         [Column("heure_fin")]
         public TimeSpan HeureFin { get; set; }
 
+        public string? ImagePath { get; set; }
+
 
     }
 }

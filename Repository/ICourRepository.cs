@@ -1,4 +1,5 @@
 ﻿using GymApplication.Repository.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections;
 
 namespace GymApplication.Repository
@@ -13,5 +14,9 @@ namespace GymApplication.Repository
         Task<bool> Exist(int courId);
         Task<int> CountCourAsync();
         Dictionary<string, int> GetCourseCountByInstructor();
+
+        Task<bool> UpdateImage(int courId, string profileImageUrl);
+
+     
     }
 }
