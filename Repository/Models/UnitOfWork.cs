@@ -15,6 +15,8 @@ namespace GymApplication.Repository.Models
         public IContactRepository ContactRepository =>  new ContactRepository(_context);
         public IImageRepository LocalStorageImageRepository => new LocalStorageImageRepository(_context);
 
+        public IPaiementRepository PaiementRepository =>  new PaiementRepository(_context);
+
         private readonly GymDbContext _context;
         private readonly PasswordHacher PasswordHacher;
         private readonly string jwtSecret;

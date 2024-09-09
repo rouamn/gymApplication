@@ -97,24 +97,66 @@ namespace GymApplication.Controllers
 
 
 
+        //[HttpPut]
+        //[Route("{id:int}")]
+        //public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] Evenement requet)
+        //{
+        //    //Check course exist
+        //    if (await uow.EventRepository.Exist(id))
+        //    {
+        //        //Update course
+        //        var updatedevent = await uow.EventRepository.UpdateEventAsync(id, requet);
+        //        if (updatedevent != null)
+        //        {
+        //            //Return course
+        //            return Ok(updatedevent);
+        //        }
+        //    }
+        //    return NotFound();
+
+        //}
+
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromBody] Evenement requet)
+        public async Task<IActionResult> UpdateEventAsync([FromRoute] int id, [FromForm] Evenement request, [FromForm] IFormFile image)
         {
-            //Check course exist
+            // Check if the event exists
             if (await uow.EventRepository.Exist(id))
             {
-                //Update course
-                var updatedevent = await uow.EventRepository.UpdateEventAsync(id, requet);
-                if (updatedevent != null)
+                if (image != null && image.Length > 0)
                 {
-                    //Return course
-                    return Ok(updatedevent);
+                    // Generate a unique file name
+                    var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+                    var extension = Path.GetExtension(image.FileName);
+                    var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+                    // Define the path where the image will be saved
+                    var path = Path.Combine("wwwroot/images/events", uniqueFileName);
+
+                    // Ensure the directory exists
+                    Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+                    // Save the image to the specified path
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Update the event request with just the image filename (without path)
+                    request.ImagePath = uniqueFileName;
+                }
+
+                // Update the event
+                var updatedEvent = await uow.EventRepository.UpdateEventAsync(id, request);
+                if (updatedEvent != null)
+                {
+                    // Return updated event
+                    return Ok(updatedEvent);
                 }
             }
             return NotFound();
-
         }
+
 
 
         [HttpDelete("{id:int}")]
@@ -202,6 +244,58 @@ namespace GymApplication.Controllers
                 _ => "application/octet-stream", // default for unknown types
             };
         }
+
+
+        [HttpPut]
+        [Route("UpdateEventImage/{id:int}")]
+        public async Task<IActionResult> UpdateEventImageAsync([FromRoute] int id, [FromForm] IFormFile image)
+        {
+            // Check if the event exists
+            if (!await uow.EventRepository.Exist(id))
+            {
+                return NotFound(new { Message = "Event not found." });
+            }
+
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest(new { Message = "No image uploaded." });
+            }
+
+            // Generate a unique file name
+            var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+            // Define the path where the image will be saved
+            var path = Path.Combine("wwwroot/images/events", uniqueFileName);
+
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            // Save the image to the specified path
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            // Update the event with the new image filename
+            var eventToUpdate = await uow.EventRepository.GetEventAsync(id);
+            if (eventToUpdate != null)
+            {
+                eventToUpdate.ImagePath = uniqueFileName;
+
+                // Update the event in the database
+                var updatedEvent = await uow.EventRepository.UpdateEventAsync(id, eventToUpdate);
+                if (updatedEvent != null)
+                {
+                    return Ok(new { Message = "Event image updated successfully!", Event = updatedEvent });
+                }
+            }
+
+            return StatusCode(500, new { Message = "An error occurred while updating the event image." });
+        }
+
+
 
     }
 }

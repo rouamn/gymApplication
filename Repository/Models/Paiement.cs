@@ -13,18 +13,33 @@ namespace GymApplication.Repository.Models
         [Column("id_paiement")]
         public int IdPaiement { get; set; }
 
-        [Column("id_utilisateur")]
-        public int IdUtilisateur { get; set; }
+        [Column("email")]
+        [StringLength(255)] 
+        public string Email { get; set; } = null!;
 
-        [Column("montant", TypeName = "decimal(10, 2)")]
-        public decimal Montant { get; set; }
+        [Column("operation_id")]
+        [StringLength(255)] 
+        public string OperationId { get; set; } = null!;
 
-        [Column("date", TypeName = "datetime")]
-        public DateTime Date { get; set; }
+        [Column("full_Name")]
+        [StringLength(255)] 
+        public string FullName { get; set; } = null!;
 
-        [Column("methode_paiement")]
-        [StringLength(50)]
-        public string MethodePaiement { get; set; } = null!;
+        [Column("cin")]
+        [StringLength(20)] 
+        public string Cin { get; set; } = null!;
+
+     
+
+        [Column("type_abonnement")]
+        [StringLength(100)] 
+        public string TypeAbonnement { get; set; } = null!;
+
+        [Column("duree_abonnement")]
+        public string DureeAbonnement { get; set; }
+
+        [Column("prix_abonnement")]
+        public decimal Prixabonnement { get; set; } 
 
         [Column("created_at", TypeName = "datetime")]
         public DateTime? CreatedAt { get; set; }
@@ -32,16 +47,5 @@ namespace GymApplication.Repository.Models
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-        [Column("stripe_payment_intent_id")]
-        public string? StripePaymentIntentId { get; set; } // Store Stripe PaymentIntent ID
-
-        [ForeignKey("IdUtilisateur")]
-        [InverseProperty("Paiements")]
-        public virtual Utilisateur IdUtilisateurNavigation { get; set; } = null!;
-
-        [Column("fk_abonnement")]
-        public int FkAbonnement { get; set; }
-
-        public virtual Abonnement Abonnement { get; set; } = null!;
     }
 }

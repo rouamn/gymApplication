@@ -35,7 +35,7 @@ using GymApplication.Repository;
 using Microsoft.EntityFrameworkCore;
 using GymApplication.UtilityService;
 using Microsoft.Extensions.FileProviders;
-
+using Stripe;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors((options) =>
@@ -54,14 +54,13 @@ builder.Services.AddDbContext<GymDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<StripeService>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-
+StripeConfiguration.ApiKey = app.Configuration.GetSection("Stripe:SecretKey").Get<String>();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

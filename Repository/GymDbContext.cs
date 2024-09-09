@@ -76,11 +76,7 @@ namespace GymApplication.Repository
 
                 entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
-                entity.HasOne(d => d.IdUtilisateurNavigation)
-                    .WithMany(p => p.Paiements)
-                    .HasForeignKey(d => d.IdUtilisateur)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
+             
             });
 
 
@@ -93,18 +89,9 @@ namespace GymApplication.Repository
 
                 entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
 
-                entity.HasOne(d => d.IdUtilisateurNavigation)
-                    .WithMany(p => p.Paiements)
-                    .HasForeignKey(d => d.IdUtilisateur)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
+              
 
-                entity.HasOne(d => d.Abonnement)
-                    .WithOne(p => p.Paiements)  // Optional: If Abonnement can have multiple Paiements
-
-                    .HasForeignKey<Paiement>(d => d.FkAbonnement)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
+              
             });
 
           

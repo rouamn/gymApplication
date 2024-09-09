@@ -10,25 +10,6 @@ namespace GymApplication.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Abonnement",
-                columns: table => new
-                {
-                    id_abonnement = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    date = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    prix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    type_abonnement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    PaiementFk = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK__Abonneme__395058AB06AC8C7D", x => x.id_abonnement);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Contact",
                 columns: table => new
                 {
@@ -83,6 +64,27 @@ namespace GymApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Paiement",
+                columns: table => new
+                {
+                    id_paiement = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    email = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    operation_id = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    full_Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    cin = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    type_abonnement = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    duree_abonnement = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    prix_abonnement = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK__Paiement__72D44CFF086B29B8", x => x.id_paiement);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Utilisateur",
                 columns: table => new
                 {
@@ -104,45 +106,34 @@ namespace GymApplication.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Paiement",
+                name: "Abonnement",
                 columns: table => new
                 {
-                    id_paiement = table.Column<int>(type: "int", nullable: false)
+                    id_abonnement = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    id_utilisateur = table.Column<int>(type: "int", nullable: false),
-                    montant = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    date = table.Column<DateTime>(type: "datetime", nullable: false),
-                    methode_paiement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    date = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    prix = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    statut = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    type_abonnement = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
                     updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    stripe_payment_intent_id = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    fk_abonnement = table.Column<int>(type: "int", nullable: false)
+                    PaiementsIdPaiement = table.Column<int>(type: "int", nullable: true),
+                    PaiementFk = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK__Paiement__72D44CFF086B29B8", x => x.id_paiement);
+                    table.PrimaryKey("PK__Abonneme__395058AB06AC8C7D", x => x.id_abonnement);
                     table.ForeignKey(
-                        name: "FK__Paiement__id_abo__4E88ABD4",
-                        column: x => x.fk_abonnement,
-                        principalTable: "Abonnement",
-                        principalColumn: "id_abonnement");
-                    table.ForeignKey(
-                        name: "FK__Paiement__id_uti__46E78A0C",
-                        column: x => x.id_utilisateur,
-                        principalTable: "Utilisateur",
-                        principalColumn: "id_utilisateur");
+                        name: "FK_Abonnement_Paiement_PaiementsIdPaiement",
+                        column: x => x.PaiementsIdPaiement,
+                        principalTable: "Paiement",
+                        principalColumn: "id_paiement");
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Paiement_fk_abonnement",
-                table: "Paiement",
-                column: "fk_abonnement",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Paiement_id_utilisateur",
-                table: "Paiement",
-                column: "id_utilisateur");
+                name: "IX_Abonnement_PaiementsIdPaiement",
+                table: "Abonnement",
+                column: "PaiementsIdPaiement");
 
             migrationBuilder.CreateIndex(
                 name: "UQ__Utilisat__AB6E6164DFB2DE3B",
@@ -154,6 +145,9 @@ namespace GymApplication.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Abonnement");
+
+            migrationBuilder.DropTable(
                 name: "Contact");
 
             migrationBuilder.DropTable(
@@ -163,13 +157,10 @@ namespace GymApplication.Migrations
                 name: "Evenement");
 
             migrationBuilder.DropTable(
-                name: "Paiement");
-
-            migrationBuilder.DropTable(
-                name: "Abonnement");
-
-            migrationBuilder.DropTable(
                 name: "Utilisateur");
+
+            migrationBuilder.DropTable(
+                name: "Paiement");
         }
     }
 }

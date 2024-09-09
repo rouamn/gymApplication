@@ -10,12 +10,7 @@ namespace GymApplication.Repository.Models
     [Index("Email", Name = "UQ__Utilisat__AB6E6164DFB2DE3B", IsUnique = true)]
     public partial class Utilisateur
     {
-        public Utilisateur()
-        {
-        
-            Paiements = new HashSet<Paiement>();
-           
-        }
+
 
         [Key]
         [Column("id_utilisateur")]
@@ -48,8 +43,7 @@ namespace GymApplication.Repository.Models
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
-        [InverseProperty("IdUtilisateurNavigation")]
-        public virtual ICollection<Paiement> Paiements { get; set; }
+     
 
        
         public string? Token { get; set; }

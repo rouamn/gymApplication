@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240828030951_test")]
+    [Migration("20240908222503_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,6 +47,9 @@ namespace GymApplication.Migrations
                     b.Property<int>("PaiementFk")
                         .HasColumnType("int");
 
+                    b.Property<int?>("PaiementsIdPaiement")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Prix")
                         .HasColumnType("decimal(10,2)")
                         .HasColumnName("prix");
@@ -71,6 +74,8 @@ namespace GymApplication.Migrations
 
                     b.HasKey("IdAbonnement")
                         .HasName("PK__Abonneme__395058AB06AC8C7D");
+
+                    b.HasIndex("PaiementsIdPaiement");
 
                     b.ToTable("Abonnement");
                 });
@@ -207,37 +212,50 @@ namespace GymApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPaiement"), 1L, 1);
 
+                    b.Property<string>("Cin")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("cin");
+
                     b.Property<DateTime?>("CreatedAt")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasColumnName("created_at")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime")
-                        .HasColumnName("date");
-
-                    b.Property<int>("FkAbonnement")
-                        .HasColumnType("int")
-                        .HasColumnName("fk_abonnement");
-
-                    b.Property<int>("IdUtilisateur")
-                        .HasColumnType("int")
-                        .HasColumnName("id_utilisateur");
-
-                    b.Property<string>("MethodePaiement")
+                    b.Property<string>("DureeAbonnement")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("methode_paiement");
-
-                    b.Property<decimal>("Montant")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("montant");
-
-                    b.Property<string>("StripePaymentIntentId")
                         .HasColumnType("nvarchar(max)")
-                        .HasColumnName("stripe_payment_intent_id");
+                        .HasColumnName("duree_abonnement");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("full_Name");
+
+                    b.Property<string>("OperationId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("operation_id");
+
+                    b.Property<decimal>("Prixabonnement")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("prix_abonnement");
+
+                    b.Property<string>("TypeAbonnement")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("type_abonnement");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .ValueGeneratedOnAdd()
@@ -247,11 +265,6 @@ namespace GymApplication.Migrations
 
                     b.HasKey("IdPaiement")
                         .HasName("PK__Paiement__72D44CFF086B29B8");
-
-                    b.HasIndex("FkAbonnement")
-                        .IsUnique();
-
-                    b.HasIndex("IdUtilisateur");
 
                     b.ToTable("Paiement");
                 });
@@ -319,32 +332,12 @@ namespace GymApplication.Migrations
                     b.ToTable("Utilisateur");
                 });
 
-            modelBuilder.Entity("GymApplication.Repository.Models.Paiement", b =>
-                {
-                    b.HasOne("GymApplication.Repository.Models.Abonnement", "Abonnement")
-                        .WithOne("Paiements")
-                        .HasForeignKey("GymApplication.Repository.Models.Paiement", "FkAbonnement")
-                        .IsRequired()
-                        .HasConstraintName("FK__Paiement__id_abo__4E88ABD4");
-
-                    b.HasOne("GymApplication.Repository.Models.Utilisateur", "IdUtilisateurNavigation")
-                        .WithMany("Paiements")
-                        .HasForeignKey("IdUtilisateur")
-                        .IsRequired()
-                        .HasConstraintName("FK__Paiement__id_uti__46E78A0C");
-
-                    b.Navigation("Abonnement");
-
-                    b.Navigation("IdUtilisateurNavigation");
-                });
-
             modelBuilder.Entity("GymApplication.Repository.Models.Abonnement", b =>
                 {
-                    b.Navigation("Paiements");
-                });
+                    b.HasOne("GymApplication.Repository.Models.Paiement", "Paiements")
+                        .WithMany()
+                        .HasForeignKey("PaiementsIdPaiement");
 
-            modelBuilder.Entity("GymApplication.Repository.Models.Utilisateur", b =>
-                {
                     b.Navigation("Paiements");
                 });
 #pragma warning restore 612, 618

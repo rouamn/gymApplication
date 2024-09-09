@@ -108,24 +108,63 @@ namespace GymApplication.Controllers
 
 
 
+        //[HttpPut]
+        //[Route("{id:int}")]
+        //public async Task<IActionResult> UpdateCourseAsync([FromRoute] int id, [FromBody] Cour requet)
+        //{
+        //    //Check course exist
+        //    if (await uow.CourRepository.Exist(id))
+        //    {
+        //        //Update course
+        //        var updatedcour = await uow.CourRepository.UpdateCourAsync(id, requet);
+        //        if (updatedcour != null)
+        //        {
+        //            //Return course
+        //            return Ok(updatedcour);
+        //        }
+        //    }
+        //    return NotFound();
+
+        //}
+
         [HttpPut]
         [Route("{id:int}")]
-        public async Task<IActionResult> UpdateCourseAsync([FromRoute] int id, [FromBody] Cour requet)
+        public async Task<IActionResult> UpdateCourseAsync([FromRoute] int id, [FromForm] Cour request, [FromForm] IFormFile image)
         {
-            //Check course exist
+            // Check if the course exists
             if (await uow.CourRepository.Exist(id))
             {
-                //Update course
-                var updatedcour = await uow.CourRepository.UpdateCourAsync(id, requet);
+                if (image != null && image.Length > 0)
+                {
+                    // Generate a unique file name
+                    var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+                    var extension = Path.GetExtension(image.FileName);
+                    var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+                    // Define the path where the image will be saved
+                    var path = Path.Combine("wwwroot/images/courses", uniqueFileName);
+
+                    // Save the image to the specified path
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await image.CopyToAsync(stream);
+                    }
+
+                    // Update the course request with just the image filename (without path)
+                    request.ImagePath = uniqueFileName;
+                }
+
+                // Update course
+                var updatedcour = await uow.CourRepository.UpdateCourAsync(id, request);
                 if (updatedcour != null)
                 {
-                    //Return course
+                    // Return updated course
                     return Ok(updatedcour);
                 }
             }
             return NotFound();
-
         }
+
 
 
         [HttpDelete("{id:int}")]
@@ -210,6 +249,59 @@ namespace GymApplication.Controllers
                 _ => "application/octet-stream", // default for unknown types
             };
         }
+
+
+
+        [HttpPut]
+        [Route("UpdateCourseImage/{id:int}")]
+        public async Task<IActionResult> UpdateCourseImageAsync([FromRoute] int id, [FromForm] IFormFile image)
+        {
+            // Check if the event exists
+            if (!await uow.CourRepository.Exist(id))
+            {
+                return NotFound(new { Message = "Course not found." });
+            }
+
+            if (image == null || image.Length == 0)
+            {
+                return BadRequest(new { Message = "No image uploaded." });
+            }
+
+            // Generate a unique file name
+            var fileName = Path.GetFileNameWithoutExtension(image.FileName);
+            var extension = Path.GetExtension(image.FileName);
+            var uniqueFileName = $"{fileName}_{Guid.NewGuid()}{extension}";
+
+            // Define the path where the image will be saved
+            var path = Path.Combine("wwwroot/images/courses", uniqueFileName);
+
+            // Ensure the directory exists
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            // Save the image to the specified path
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+
+            // Update the event with the new image filename
+            var courseToUpdate = await uow.CourRepository.GetCourAsync(id);
+            if (courseToUpdate != null)
+            {
+                courseToUpdate.ImagePath = uniqueFileName;
+
+                // Update the event in the database
+                var updatedcourse = await uow.CourRepository.UpdateCourAsync(id, courseToUpdate);
+                if (updatedcourse != null)
+                {
+                    return Ok(new { Message = "Course image updated successfully!", Event = updatedcourse });
+                }
+            }
+
+            return StatusCode(500, new { Message = "An error occurred while updating the course image." });
+        }
+
+
 
     }
 }

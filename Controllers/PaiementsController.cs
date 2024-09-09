@@ -2,50 +2,69 @@
 using GymApplication.Repository.Models;
 using GymApplication.UtilityService;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
+using System.Threading.Tasks;
 
 namespace GymApplication.Controllers
 {
     [ApiController]
-    [Route("api/paiements")]
+    [Route("[controller]")]
     public class PaiementsController : ControllerBase
     {
-        private readonly StripeService _stripeService;
-        private readonly GymDbContext _context;
-
-        public PaiementsController(StripeService stripeService, GymDbContext context)
+        private readonly IUnitOfWork uow;
+        public PaiementsController(IUnitOfWork uow)
         {
-            _stripeService = stripeService;
-            _context = context;
+            this.uow = uow;
         }
 
-        [HttpPost("create-payment-intent")]
-        public async Task<IActionResult> CreatePaymentIntent([FromBody] PaiementCreateRequest request)
+        [HttpGet]
+        [Route("GetAllPaiements")]
+        public async Task<IActionResult> GetAllPaiments()
         {
-            var paymentIntent = await _stripeService.CreatePaymentIntent(request.Montant);
+            var paiements = await uow.PaiementRepository.GetPaiementAsync();
 
-            // Create a new Paiement record
-            var paiement = new Paiement
+            return Ok(paiements);
+        }
+
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetPaiementById(int id)
+        {
+            var paiement = await uow.PaiementRepository.GetPaiementAsync(id);
+            if (paiement == null)
             {
-                IdUtilisateur = request.IdUtilisateur,
-                Montant = request.Montant,
-                Date = DateTime.UtcNow,
-                MethodePaiement = "Stripe",
-                StripePaymentIntentId = paymentIntent.Id,
-                FkAbonnement = request.FkAbonnement,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Paiements.Add(paiement);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { ClientSecret = paymentIntent.ClientSecret, PaiementId = paiement.IdPaiement });
+                return NotFound();
+            }
+            return Ok(paiement);
         }
-    }
+        [HttpGet("operation/{id}")]
+        public async Task<IActionResult> GetPaiementByOperationId(string id)
+        {
+            // Fetch the paiement using the Unit of Work's PaiementRepository
+            var paiement = await uow.PaiementRepository.GetPaiementByOperationId(id);
 
-    public class PaiementCreateRequest
-    {
-        public int IdUtilisateur { get; set; }
-        public decimal Montant { get; set; }
-        public int FkAbonnement { get; set; }
+            // Check if the paiement was found
+            if (paiement == null)
+            {
+                return NotFound(new { message = "Paiement not found with the given OperationId." });
+            }
+
+            // Return the found paiement
+            return Ok(paiement);
+        }
+
+
+
+        [HttpPost]
+        [Route("Insertpaiement")]
+        public async Task<IActionResult> AddPaiementAsync([FromBody] Paiement request)
+        {     
+                //Add paiment
+                await uow.PaiementRepository.AddPaiementAsync(request);
+            //Return paiment
+            return Ok(new { Message = "paiement added successfully !!" });         
+        }
+
+
     }
 }
