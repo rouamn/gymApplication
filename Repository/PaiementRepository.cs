@@ -1,4 +1,5 @@
 ﻿using GymApplication.Repository.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections;
@@ -19,6 +20,15 @@ namespace GymApplication.Repository
             return paiements.Entity;
         }
 
+        public async Task<int> CountPaiementAsync()
+        {
+            var paiements = await context.Paiements.ToListAsync();
+            var count = paiements.Count;
+            return count;
+        }
+
+       
+
         public async Task<bool> Exist(int paiementId)
         {
             return await context.Paiements.AnyAsync(s => s.IdPaiement == paiementId);
@@ -26,7 +36,10 @@ namespace GymApplication.Repository
 
         public async Task<ICollection> GetPaiementAsync()
         {
-            var paiements = await context.Paiements.ToListAsync();
+            var paiements = await context.Paiements
+                .Where(p => p.Visibility) // Filter by Visibility = true
+                .ToListAsync();
+
             var paiementsToSend = paiements.Select(b => new
             {
                 b.IdPaiement,
@@ -39,6 +52,7 @@ namespace GymApplication.Repository
                 b.Prixabonnement,
                 b.CreatedAt,
             }).ToList();
+
             return paiementsToSend;
         }
 
@@ -53,5 +67,16 @@ namespace GymApplication.Repository
              return await context.Paiements
                   .FirstOrDefaultAsync(u => u.OperationId == Id);
         }
+
+        public async Task<string> UpdateVisibilityAsync(int id,  bool newVisibility = false)
+        {
+            newVisibility = false;
+            var paiement = await context.Paiements.FindAsync(id);
+            paiement.Visibility = newVisibility;
+            await context.SaveChangesAsync();
+            return "Visibility updated successfully.";
+        }
+
+       
     }
 }

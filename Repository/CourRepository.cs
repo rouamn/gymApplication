@@ -101,7 +101,7 @@ namespace GymApplication.Repository
                 existingCour.Duree = request.Duree;
                 existingCour.CourseDate = request.CourseDate;
                 existingCour.InstructorName = request.InstructorName;
-
+                existingCour.ImagePath = request.ImagePath;
                 await context.SaveChangesAsync();
 
                 return existingCour;

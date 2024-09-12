@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GymApplication.Migrations
 {
     [DbContext(typeof(GymDbContext))]
-    [Migration("20240908222503_test")]
+    [Migration("20240911200202_test")]
     partial class test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -262,6 +262,10 @@ namespace GymApplication.Migrations
                         .HasColumnType("datetime")
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<bool>("Visibility")
+                        .HasColumnType("bit")
+                        .HasColumnName("visibility");
 
                     b.HasKey("IdPaiement")
                         .HasName("PK__Paiement__72D44CFF086B29B8");

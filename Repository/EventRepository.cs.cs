@@ -78,9 +78,9 @@ namespace GymApplication.Repository
                 existingEvent.Description = request.Description;
                 existingEvent.Date = request.Date;
                 existingEvent.UpdatedAt = DateTime.UtcNow;
-
+                existingEvent.ImagePath = request.ImagePath;
                 await context.SaveChangesAsync();
-
+                
                 return existingEvent;
 
             }

@@ -65,6 +65,24 @@ namespace GymApplication.Controllers
             return Ok(new { Message = "paiement added successfully !!" });         
         }
 
+        [HttpGet]
+        [Route("CountAllPaiements")]
+        public async Task<IActionResult> CountAllCoursess()
+        {
+            var paiements = await uow.PaiementRepository.CountPaiementAsync();
+
+            return Ok(paiements);
+        }
+
+
+        [HttpPut("{id:int}/visibility")]
+        public async Task<IActionResult> UpdateVisibility([FromRoute] int id, [FromBody] bool newVisibility)
+        {
+            newVisibility = false;
+            await uow.PaiementRepository.UpdateVisibilityAsync(id, newVisibility);
+            return Ok(new { Message = "Visibility updated successfully." });    
+        }
+
 
     }
 }

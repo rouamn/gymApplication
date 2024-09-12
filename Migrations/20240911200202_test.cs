@@ -77,7 +77,8 @@ namespace GymApplication.Migrations
                     duree_abonnement = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     prix_abonnement = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
-                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())")
+                    updated_at = table.Column<DateTime>(type: "datetime", nullable: true, defaultValueSql: "(getdate())"),
+                    visibility = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -47,5 +47,8 @@ namespace GymApplication.Repository.Models
         [Column("updated_at", TypeName = "datetime")]
         public DateTime? UpdatedAt { get; set; }
 
+        [Column("visibility")]
+        public bool Visibility { get; set; } = true;
+
     }
 }

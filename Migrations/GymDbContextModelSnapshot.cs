@@ -261,6 +261,10 @@ namespace GymApplication.Migrations
                         .HasColumnName("updated_at")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<bool>("Visibility")
+                        .HasColumnType("bit")
+                        .HasColumnName("visibility");
+
                     b.HasKey("IdPaiement")
                         .HasName("PK__Paiement__72D44CFF086B29B8");
 
